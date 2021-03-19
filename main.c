@@ -18,24 +18,54 @@
 /*
     Include project libraries
 */
-//#include "lib.h"
+#include "config.h"
+
+/*
+    Constants
+*/
+
+#define MAX_CHAR_LINE_CONFIG 20
+
+
+/*
+    Globals
+*/
+// mutex
+// shmem
+config_t config; // config struct
 
 
 /*
     main function
     run as: ./formula1 [config-filename] 
+
+        get parameters, loads configs and starts all proccesses
+
+    exit codes:
+        3 - absent param
+        5 - problem loading config
 */
 int main(int argc, char **argv) {
 
+    int status = 0; // status codes for commands
+
+
+    // check parameters
     if (argc != 2) {
-		printf("Wrong number of parameters\n");
-		exit(0);
+		printf("No filename given\n");
+		exit(3);
 	}
 
 
 
-
-    FILE *configFile = fopen(argv[1], "r");
+    // check config loading
+    if ( (status = load_config(&config, argv[1])) != 0) {
+        printf("ERROR CODE [%d]", status);
+        exit(5);
+    }
     
+
+    // init shared memory
+
 
 }
