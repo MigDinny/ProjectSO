@@ -14,25 +14,29 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 /*
     Include project libraries
 */
 #include "config.h"
+#include "sharedmem.h"
 
 /*
     Constants
 */
 
-#define MAX_CHAR_LINE_CONFIG 20
-
 
 /*
     Globals
 */
-// mutex
-// shmem
-config_t config; // config struct
+shmem_t *shmem; // shared memory struct POINTER
+int shmid, sem;
 
 
 /*
@@ -57,15 +61,15 @@ int main(int argc, char **argv) {
 	}
 
 
+    // init shared memory and semaphore to access shmem
+    init_shared_memory(&shmid, &sem);
+
 
     // check config loading
-    if ( (status = load_config(&config, argv[1])) != 0) {
-        printf("ERROR CODE [%d]", status);
+    if ( (status = load_config(&(shmem->config), argv[1])) != 0) {
+        printf("ERROR load_config CODE [%d]", status);
         exit(5);
     }
-    
 
-    // init shared memory
-
-
+    exit(0);
 }

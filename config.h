@@ -1,3 +1,7 @@
+#pragma once
+
+#define MAX_CHAR_LINE 20
+
 typedef struct config_t {
     int time;
     int dist;
