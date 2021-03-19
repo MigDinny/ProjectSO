@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
         printf("ERROR CODE [%d]", status);
         exit(5);
     }
-    
+    printf("%d %d %d %d %d %d %d %d\n", config.time, config.dist, config.nTurns, config.nTeams, config.tBreakDown, config.tMinBox, config.tMaxBox, config.fuelTank);
 
     // init shared memory
 

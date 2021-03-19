@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "config.h"
 
-#define MAX_CHAR_LINE = 20
 
 int load_config(config_t *c, char *filename) {
 
@@ -12,13 +12,13 @@ int load_config(config_t *c, char *filename) {
 
     char *aux;
 
-    int time, dist, nTurns, nTeams, tBreakDown, tMinBox, tMaxBox, fuelTank, i = 0; 
+    int time, dist, nTurns, nTeams, tBreakDown, tMinBox, tMaxBox, fuelTank = 0; 
 
     fgets(line, MAX_CHAR_LINE, configFile);
     time = atoi(line);
  
     fgets(line, MAX_CHAR_LINE, configFile);
-    aux = strtok(&line, ", ");
+    aux = strtok(line, ", ");
     dist = atoi(aux);
 
     aux = strtok(NULL, ", ");
@@ -31,7 +31,7 @@ int load_config(config_t *c, char *filename) {
     tBreakDown = atoi(line);
 
     fgets(line, MAX_CHAR_LINE, configFile); 
-    aux = strtok(&line, ", ");
+    aux = strtok(line, ", ");
     tMinBox = atoi(aux);
 
     aux = strtok(NULL, ", ");
@@ -40,7 +40,21 @@ int load_config(config_t *c, char *filename) {
     fgets(line, MAX_CHAR_LINE, configFile); 
     fuelTank = atoi(line);
 
-    printf("%d %d %d %d %d %d %d %d\n", time, dist, nTurns, nTeams, tBreakDown, tMinBox, tMaxBox, fuelTank);
+    if (nTeams < 3 && time < 1 && dist < 1 && nTurns < 1 && tBreakDown < 1 && tMinBox < 1 && tMaxBox < 1 && fuelTank < 1) {
+
+        return -1;
+    }
    
     fclose(configFile);
+
+    c->time = time;
+    c->dist = dist;
+    c->nTurns = nTurns;
+    c->nTeams = nTeams;
+    c->tBreakDown = tBreakDown;
+    c->tMinBox = tMinBox;
+    c->tMaxBox = tMaxBox;
+    c->fuelTank = fuelTank;
+
+    return 0;
 }
