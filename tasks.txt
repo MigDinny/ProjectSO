@@ -1,0 +1,57 @@
+SIMULADOR DE CORRIDA - MAIN PROCCESS
+
+Phase 1
+
+    - arranque do server
+    - leitura do config
+    - validação dos dados config
+    - aplicação das config (numa structure)
+
+Phase 2
+
+    - Criação de processos GESTOR DE CORRIDA e GESTOR DE AVARIAS
+    - Criação da shared memory
+
+
+
+###########################################
+
+
+GESTOR DE CORRIDA - proccess
+
+    - Criação de processos de GESTOR DE EQUIPA 
+
+
+
+###################################################
+
+
+GESTOR DE EQUIPA - proccess
+
+    - Criação de threads CARRO
+
+
+################################################ IGNORAR
+
+GESTOR DE AVARIAS - processos (não necessário para defesa intermédia)
+
+    - Gera avarias nos threads CARRO consoante a sua fiabilidade
+
+
+##############################################
+
+FICHEIRO LOG - file & lib
+
+
+    - output para file e ecrã com sincronização
+    - criação de LIB
+
+###############################################
+
+GERAL
+
+    - diagrama com a arquitetura do programa e mecanismos de sincronização
+        (figura 2 com mais detalhe)
+
+    - inicialização dos mutexes, semáforos e cond_vars
+

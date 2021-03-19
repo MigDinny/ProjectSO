@@ -9,6 +9,7 @@ int load_config(config_t *c, char *filename) {
 
     FILE *configFile = fopen(filename, "r");
     char line[MAX_CHAR_LINE];
+
     char *aux;
 
     int time, dist, nTurns, nTeams, tBreakDown, tMinBox, tMaxBox, fuelTank, i = 0; 
@@ -40,8 +41,6 @@ int load_config(config_t *c, char *filename) {
     fuelTank = atoi(line);
 
     printf("%d %d %d %d %d %d %d %d\n", time, dist, nTurns, nTeams, tBreakDown, tMinBox, tMaxBox, fuelTank);
-    
-
-
+   
     fclose(configFile);
 }
