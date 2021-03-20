@@ -14,5 +14,8 @@ typedef struct config_t {
     int fuelTank; 
 } config_t;
 
+void remove_spaces(char *);
+
+void check_commas(char *);
 
 int load_config(config_t*, char*);

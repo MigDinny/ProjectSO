@@ -49,23 +49,28 @@ int load_config(config_t *c, char *filename) {
     // if no of lines is different from MAX_LINES return -2 
     if (nLines != MAX_LINES) {
         fclose(configFile);
-        return -2;
+        return 2;
     }
 
     // convert values to int
-    for (int j = 0; j< nLines; j++) {
-        
+    for (int j = 0; j < nLines; j++) {
         if (j == 1 || j == 4) {
             remove_spaces(lines[j]);
 
             if (strchr(lines[j], ',') != NULL) {    // check separator ','
                 check_commas(lines[j]);
                 aux = strtok(lines[j], ",");
-                values[ind] = atoi(aux);            // convert string to int
-                ind++;
 
+                if (aux != NULL) {
+                    values[ind] = atoi(aux);         
+                }            
+                ind++;
+                
                 aux = strtok(NULL, ",");
-                values[ind] = atoi(aux);
+
+                if (aux != NULL) {
+                    values[ind] = atoi(aux);
+                }
                 ind++;
 
             } else {
@@ -73,18 +78,19 @@ int load_config(config_t *c, char *filename) {
             }
 
         } else {
-            values[ind] = atoi(lines[j]);
+            values[ind] = atoi(lines[j]);           // convert string to int
             ind++; 
         }
     }
 
     fclose(configFile);
-
+    
     // return -1 in case the values are invalid
     if (values[3] < 3 || values[0] < 1 || values[1] < 1 || values[2] < 1 || values[4] < 1 || values[5] < 1 || values[6] < 1 || values[7] < 1) {
-        return -1;
+        return 1;
     }
-    
+
+    // TODO: debug next lines, config NULL
     // set values in struct
     c->time = values[0];
     c->dist = values[1];
