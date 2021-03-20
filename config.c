@@ -16,6 +16,21 @@ void removeSpaces(char *str) {
     str[count] = '\0'; 
 }
 
+void checkCommas(char *str) {
+    int count = 0;
+    int first = 0; 
+
+    for (int i = 0; str[i]; i++) 
+        if (str[i] != ',') {
+            str[count++] = str[i]; 
+        } else if (str[i] == ',' && first == 0) {
+            first = 1;
+            str[count++] = str[i];
+        }
+
+    str[count] = '\0'; 
+}
+
 
 int load_config(config_t *c, char *filename) {
 
@@ -40,16 +55,21 @@ int load_config(config_t *c, char *filename) {
 
     //convert values to int
     for (int j = 0; j< nLines; j++) {
-        
+        //printf("%d %d %d %d %d %d %d %d __\n",values[0], values[1],values[2], values[3], values[4], values[5], values[6], values[7]);
         if (j == 1 || j == 4) {
             removeSpaces(lines[j]);
 
             if (strchr(lines[j], ',') != NULL) {    //check from the separator ','
+                //printf("#%s#\n", lines[j]);
+                //checkCommas(lines[j]);
+                //printf("_%s\n_", lines[j]);
                 aux = strtok(lines[j], ",");
+                //printf("!!%s!!\n", aux);
                 values[ind] = atoi(aux);            //convert string to int
                 ind++;
 
                 aux = strtok(NULL, ",");
+                //printf("!!!%s!!!\n", aux);
                 values[ind] = atoi(aux);
                 ind++;
 
