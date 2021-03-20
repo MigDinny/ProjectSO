@@ -1,2 +1,5 @@
-formula1: main.c
-	gcc -g -o formula1 main.c -I.
+formula1: main.c config.c sharedmem.c
+	gcc -Wall -g -o formula1 main.c config.c sharedmem.c -I.
+
+clean: 
+	rm *.o formula1
