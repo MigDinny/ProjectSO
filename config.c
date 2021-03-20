@@ -1,44 +1,99 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "config.h"
+
+
+// remove all spaces from a string
+void remove_spaces(char *str) {
+    int count = 0; 
+
+    for (int i = 0; str[i]; i++) 
+        if (str[i] != ' ') 
+            str[count++] = str[i]; 
+
+    str[count] = '\0'; 
+}
+
+void check_commas(char *str) {
+    int count = 0;
+    int first = 0; 
+
+    for (int i = 0; str[i]; i++) 
+        if (str[i] != ',') {
+            str[count++] = str[i]; 
+        } else if (str[i] == ',' && first == 0) {
+            first = 1;
+            str[count++] = str[i];
+        }
+
+    str[count] = '\0'; 
+}
 
 int load_config(config_t *c, char *filename) {
 
     FILE *configFile = fopen(filename, "r");
-    char line[MAX_CHAR_LINE];
-
+    
+    char lines[MAX_LINES][MAX_CHAR_LINE];
     char *aux;
 
-    int time, dist, nTurns, nTeams, tBreakDown, tMinBox, tMaxBox, fuelTank, i = 0; 
+    int nLines, ind = 0; 
+    int values[8] = { 0 };
 
-    fgets(line, MAX_CHAR_LINE, configFile);
-    time = atoi(line);
- 
-    fgets(line, MAX_CHAR_LINE, configFile);
-    aux = strtok(&line, ", ");
-    dist = atoi(aux);
+    // read confiFile
+    while(fgets(lines[nLines], MAX_CHAR_LINE, configFile) != NULL && nLines < MAX_LINES) {
+        nLines++;
+    }
+    
+    // if no of lines is different from MAX_LINES return -2 
+    if (nLines != MAX_LINES) {
+        fclose(configFile);
+        return -2;
+    }
 
-    aux = strtok(NULL, ", ");
-    nTurns = atoi(aux);
+    // convert values to int
+    for (int j = 0; j< nLines; j++) {
+        
+        if (j == 1 || j == 4) {
+            remove_spaces(lines[j]);
 
-    fgets(line, MAX_CHAR_LINE, configFile); 
-    nTeams = atoi(line);
+            if (strchr(lines[j], ',') != NULL) {    // check separator ','
+                check_commas(lines[j]);
+                aux = strtok(lines[j], ",");
+                values[ind] = atoi(aux);            // convert string to int
+                ind++;
 
-    fgets(line, MAX_CHAR_LINE, configFile); 
-    tBreakDown = atoi(line);
+                aux = strtok(NULL, ",");
+                values[ind] = atoi(aux);
+                ind++;
 
-    fgets(line, MAX_CHAR_LINE, configFile); 
-    aux = strtok(&line, ", ");
-    tMinBox = atoi(aux);
+            } else {
+                ind += 2;
+            }
 
-    aux = strtok(NULL, ", ");
-    tMaxBox = atoi(aux);
+        } else {
+            values[ind] = atoi(lines[j]);
+            ind++; 
+        }
+    }
 
-    fgets(line, MAX_CHAR_LINE, configFile); 
-    fuelTank = atoi(line);
-
-    printf("%d %d %d %d %d %d %d %d\n", time, dist, nTurns, nTeams, tBreakDown, tMinBox, tMaxBox, fuelTank);
-   
     fclose(configFile);
+
+    // return -1 in case the values are invalid
+    if (values[3] < 3 || values[0] < 1 || values[1] < 1 || values[2] < 1 || values[4] < 1 || values[5] < 1 || values[6] < 1 || values[7] < 1) {
+        return -1;
+    }
+    
+    // set values in struct
+    c->time = values[0];
+    c->dist = values[1];
+    c->nTurns = values[2];
+    c->nTeams = values[3];
+    c->tBreakDown = values[4];
+    c->tMinBox = values[5];
+    c->tMaxBox = values[6];
+    c->fuelTank = values[7];
+
+    return 0;
 }
