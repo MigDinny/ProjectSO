@@ -6,7 +6,7 @@
 
 typedef struct shmem_t {
 
-    config_t config;
+    int test;
 
 } shmem_t;
 

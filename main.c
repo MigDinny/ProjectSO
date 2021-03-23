@@ -15,12 +15,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <semaphore.h>
+#include <sys/types.h> 
+#include <unistd.h> 
+#include <sys/wait.h>
 
 /*
     Include project libraries
 */
 #include "config.h"
 #include "sharedmem.h"
+#include "raceman.h"
+#include "breakdownman.h"
 
 /*
     Constants
@@ -33,6 +38,8 @@
 shmem_t *shmem; // shared memory struct POINTER
 int shmid;
 sem_t *mutex; 
+
+config_t config;
 
 /*
     main function
@@ -69,9 +76,24 @@ int main(int argc, char **argv) {
 
 
     // check config loading
-    if ( (status = load_config(&(shmem->config), argv[1])) != 0) {
+    if ( (status = load_config(&config, argv[1])) != 0) {
         printf("ERROR load_config CODE [%d]", status);
         exit(5);
+    }
+
+
+    // create RACE MANAGER proccess
+    if (fork() == 0) {
+        // inside child, call worker
+        race_manager_worker(config, shmem, mutex);
+        exit(0);
+    }
+
+    // create BREAKDOWN MANAGER proccess
+    if (fork() == 0) {
+        // inside child, call worker
+        breakdown_manager_worker(config, shmem, mutex);
+        exit(0);
     }
 
 

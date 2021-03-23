@@ -7,6 +7,10 @@
 #include <sys/wait.h>
 #include <semaphore.h>
 
+/*
+    @TODO: init shmem values!!! they probably must not be null or 0.
+    first proccess to acquire lock to shared memory is kinda random which can bring some unexpected results
+*/
 void *init_shared_memory(int *shmid) {
 
     *shmid = shmget(IPC_PRIVATE, sizeof(shmem_t), IPC_CREAT|0666);
