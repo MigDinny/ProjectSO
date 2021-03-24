@@ -2,15 +2,15 @@ SIMULADOR DE CORRIDA - MAIN PROCCESS
 
 Phase 1
 
-    - arranque do server
-    - leitura do config
-    - validação dos dados config
-    - aplicação das config (numa structure)
+   X - arranque do server
+   X - leitura do config
+   X - validação dos dados config
+   X - aplicação das config (numa structure)
 
 Phase 2
 
     - Criação de processos GESTOR DE CORRIDA e GESTOR DE AVARIAS
-    - Criação da shared memory
+   X - Criação da shared memory
 
 
 

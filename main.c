@@ -14,12 +14,7 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/fcntl.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include <semaphore.h>
 
 /*
     Include project libraries
@@ -36,8 +31,8 @@
     Globals
 */
 shmem_t *shmem; // shared memory struct POINTER
-int shmid, sem;
-
+int shmid;
+sem_t *mutex; 
 
 /*
     main function
@@ -56,13 +51,21 @@ int main(int argc, char **argv) {
 
     // check parameters
     if (argc != 2) {
-		printf("No filename given\n");
+		printf("ERROR No filename given\n");
 		exit(3);
 	}
 
 
-    // init shared memory and semaphore to access shmem
-    init_shared_memory(&shmid, &sem);
+    // init shared memory
+    shmem = init_shared_memory(&shmid);
+    if (shmid < 0) {
+        printf("ERROR init_shared_memory CODE [%d]", shmid);
+        exit(4);
+    }
+
+
+    // init semaphore to MUTEX shared memory
+    mutex = init_shared_memory_mutex();
 
 
     // check config loading
@@ -71,5 +74,7 @@ int main(int argc, char **argv) {
         exit(5);
     }
 
+
+    clean_all_shared(mutex, shmem, shmid);
     exit(0);
 }
