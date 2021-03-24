@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "log.h"
 
@@ -20,9 +22,11 @@ int close_log() {
     return 0;
 }
 
-int log(char line[MAX_SIZE]) {
-    
-    fwrite(line, sizeof(char), sizeof(line), logfile);
+int plog(char line[MAX_SIZE]) {
+
+    printf("%s\n", line);
+    fwrite(line, sizeof(char), strlen(line), logfile);
+    fwrite("\n", sizeof(char), 2, logfile);
 
     return 0;
 }
