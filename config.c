@@ -39,7 +39,7 @@ int load_config(config_t *c, char *filename) {
     char *aux;
 
     int nLines, ind = 0; 
-    int values[8] = { 0 };
+    int values[9] = { 0 };
 
     // read confiFile
     while(fgets(lines[nLines], MAX_CHAR_LINE, configFile) != NULL && nLines < MAX_LINES) {
@@ -54,7 +54,7 @@ int load_config(config_t *c, char *filename) {
 
     // convert values to int
     for (int j = 0; j < nLines; j++) {
-        if (j == 1 || j == 4) {
+        if (j == 1 || j == 5) {
             remove_spaces(lines[j]);
 
             if (strchr(lines[j], ',') != NULL) {    // check separator ','
@@ -86,7 +86,7 @@ int load_config(config_t *c, char *filename) {
     fclose(configFile);
     
     // return -1 in case the values are invalid
-    if (values[3] < 3 || values[0] < 1 || values[1] < 1 || values[2] < 1 || values[4] < 1 || values[5] < 1 || values[6] < 1 || values[7] < 1) {
+    if (values[3] < 3 || values[0] < 1 || values[1] < 1 || values[2] < 1 || values[4] < 1 || values[5] < 1 || values[6] < 1 || values[7] < 1 || values[8] < 1 ) {
         return 1;
     }
 
@@ -96,10 +96,11 @@ int load_config(config_t *c, char *filename) {
     c->dist = values[1];
     c->nTurns = values[2];
     c->nTeams = values[3];
-    c->tBreakDown = values[4];
-    c->tMinBox = values[5];
-    c->tMaxBox = values[6];
-    c->fuelTank = values[7];
+    c->nCars = values[4];
+    c->tBreakDown = values[5];
+    c->tMinBox = values[6];
+    c->tMaxBox = values[7];
+    c->fuelTank = values[8];
 
     return 0;
 }
