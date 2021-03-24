@@ -1,13 +1,14 @@
 #pragma once
 
 #define MAX_CHAR_LINE 20
-#define MAX_LINES 6
+#define MAX_LINES 7
 
 typedef struct config_t {
     int time;
     int dist;
     int nTurns;
     int nTeams;
+    int nCars;
     int tBreakDown;
     int tMinBox;
     int tMaxBox;
