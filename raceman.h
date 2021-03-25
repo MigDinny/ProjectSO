@@ -4,4 +4,4 @@
 #include "sharedmem.h"
 
 
-void race_manager_worker(config_t, shmem_t*, sem_t*);
+void race_manager_worker(shmem_t*);

@@ -8,15 +8,17 @@
 #include "teamman.h"
 
 
-void race_manager_worker(config_t config, shmem_t *shmem, sem_t *mutex) {
+void race_manager_worker(shmem_t *shmem) {
         // TODO: proccess
 
     // creates TEAM_MANGERS
-    for (int i = 0; i < config.nTeams; i++) {
+    for (int i = 0; i < shmem->config.nTeams; i++) {
         if(fork() == 0){
-            team_manager_worker(config, shmem, mutex);
+            team_manager_worker(shmem);
             exit(0);
         }
     }
+
+    wait(NULL);
     
 }

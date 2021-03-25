@@ -37,9 +37,7 @@
 */
 shmem_t *shmem; // shared memory struct POINTER
 int shmid;
-sem_t *mutex; 
 
-config_t config;
 
 /*
     main function
@@ -72,11 +70,11 @@ int main(int argc, char **argv) {
 
 
     // init semaphore to MUTEX shared memory
-    mutex = init_shared_memory_mutex();
+    shmem->mutex = init_shared_memory_mutex();
 
 
     // check config loading
-    if ( (status = load_config(&config, argv[1])) != 0) {
+    if ( (status = load_config(&(shmem->config), argv[1])) != 0) {
         printf("ERROR load_config CODE [%d]", status);
         exit(5);
     }
@@ -85,18 +83,20 @@ int main(int argc, char **argv) {
     // create RACE MANAGER proccess
     if (fork() == 0) {
         // inside child, call worker
-        race_manager_worker(config, shmem, mutex);
+        race_manager_worker(shmem);
         exit(0);
     }
 
     // create BREAKDOWN MANAGER proccess
     if (fork() == 0) {
         // inside child, call worker
-        breakdown_manager_worker(config, shmem, mutex);
+        breakdown_manager_worker(shmem);
         exit(0);
     }
 
+    wait(NULL);
+    wait(NULL);
 
-    clean_all_shared(mutex, shmem, shmid);
+    clean_all_shared(shmem, shmid);
     exit(0);
 }
