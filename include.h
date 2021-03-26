@@ -14,10 +14,19 @@
 #define MAX_CHAR_LINE 20
 #define MAX_LINES 7
 
+#define MAX_TEAMS 10
+#define BOX_STATUS_FREE 0
+#define BOX_STATUS_BUSY 1
+#define BOX_STATUS_RESERVED 2
+
 #define MAX_TEAM_NAME 50
 #define MAX_CARS 10
+#define CAR_STATUS_RUNNING 0
+#define CAR_STATUS_SAFETY 1
+#define CAR_STATUS_BOX 2
+#define CAR_STATUS_NO_FUEL 3
+#define CAR_STATUS_FINISHED 4
 
-#define MAX_TEAMS 10
 
 // STRUCTS 
 
@@ -35,6 +44,9 @@ typedef struct config_t {
 
 typedef struct car_t {
     int carNum;
+    int pos;
+    int laps;
+    int status;
     int speed;
     float consumption;
     float reliability;
@@ -44,7 +56,7 @@ typedef struct car_t {
 typedef struct team_t {
     char teamName[MAX_TEAM_NAME];
     struct car_t cars[MAX_CARS];
-
+    int box;
 
 } team_t;
 
@@ -57,8 +69,6 @@ typedef struct shmem_t {
     config_t config;
 
 } shmem_t;
-
-
 
 
 
