@@ -64,7 +64,7 @@ typedef struct team_t {
 typedef struct shmem_t {
     team_t teams[MAX_TEAMS];
 
-    int test;
+    int raceStatus;
     sem_t *mutex; 
     config_t config;
 

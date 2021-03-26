@@ -14,9 +14,9 @@ Phase 2
 
 Phase 3
 
-   - Captura de SINAIS e encaminhamento
-   - Captura de INPUT e encaminhamento
-   - criar structs de carro e equipa
+   M - Captura de SINAIS e encaminhamento
+   R - Captura de INPUT e encaminhamento
+   X - criar structs de carro e equipa
    
 ###########################################
 
@@ -25,9 +25,9 @@ GESTOR DE CORRIDA - proccess
 
    X - Criação de processos de GESTOR DE EQUIPA 
 
-   - Captura de sinais e encaminhamento
+   M - Captura de sinais e encaminhamento
 
-   - Funções de input de string, validação e encaminhamento
+   R - Funções de input de string, validação e encaminhamento
 
 
 ###################################################
@@ -42,7 +42,8 @@ GESTOR DE EQUIPA - proccess
 
 GESTOR DE AVARIAS - processos (não necessário para defesa intermédia)
 
-    - Gera avarias nos threads CARRO consoante a sua fiabilidade
+   - Gera avarias nos threads CARRO consoante a sua fiabilidade
+   M - loop sleep para gerar as avarias
 
 
 ##############################################
@@ -53,13 +54,13 @@ FICHEIRO LOG - file & lib
    X - output para file e ecrã com sincronização
    X - criação de LIB
 
-   - TIMESTAMP
+   X - TIMESTAMP
 
 ###############################################
 
 GERAL
 
-    - diagrama com a arquitetura do programa e mecanismos de sincronização
+   - diagrama com a arquitetura do programa e mecanismos de sincronização
         (figura 2 com mais detalhe)
 
    X - inicialização dos mutexes, semáforos e cond_vars
