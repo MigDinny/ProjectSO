@@ -15,12 +15,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <semaphore.h>
+#include <sys/types.h> 
+#include <unistd.h> 
+#include <sys/wait.h>
 
 /*
     Include project libraries
 */
 #include "config.h"
 #include "sharedmem.h"
+#include "raceman.h"
+#include "breakdownman.h"
 
 /*
     Constants
@@ -32,7 +37,7 @@
 */
 shmem_t *shmem; // shared memory struct POINTER
 int shmid;
-sem_t *mutex; 
+
 
 /*
     main function
@@ -65,7 +70,7 @@ int main(int argc, char **argv) {
 
 
     // init semaphore to MUTEX shared memory
-    mutex = init_shared_memory_mutex();
+    shmem->mutex = init_shared_memory_mutex();
 
 
     // check config loading
@@ -75,6 +80,23 @@ int main(int argc, char **argv) {
     }
 
 
-    clean_all_shared(mutex, shmem, shmid);
+    // create RACE MANAGER proccess
+    if (fork() == 0) {
+        // inside child, call worker
+        race_manager_worker(shmem);
+        exit(0);
+    }
+
+    // create BREAKDOWN MANAGER proccess
+    if (fork() == 0) {
+        // inside child, call worker
+        breakdown_manager_worker(shmem);
+        exit(0);
+    }
+
+    wait(NULL);
+    wait(NULL);
+
+    clean_all_shared(shmem, shmid);
     exit(0);
 }

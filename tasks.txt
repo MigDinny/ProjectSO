@@ -9,7 +9,7 @@ Phase 1
 
 Phase 2
 
-    - Criação de processos GESTOR DE CORRIDA e GESTOR DE AVARIAS
+   X - Criação de processos GESTOR DE CORRIDA e GESTOR DE AVARIAS
    X - Criação da shared memory
 
 
@@ -19,7 +19,7 @@ Phase 2
 
 GESTOR DE CORRIDA - proccess
 
-    - Criação de processos de GESTOR DE EQUIPA 
+   X - Criação de processos de GESTOR DE EQUIPA 
 
 
 
@@ -28,7 +28,7 @@ GESTOR DE CORRIDA - proccess
 
 GESTOR DE EQUIPA - proccess
 
-    - Criação de threads CARRO
+   X - Criação de threads CARRO
 
 
 ################################################ IGNORAR
@@ -43,8 +43,8 @@ GESTOR DE AVARIAS - processos (não necessário para defesa intermédia)
 FICHEIRO LOG - file & lib
 
 
-    - output para file e ecrã com sincronização
-    - criação de LIB
+   X - output para file e ecrã com sincronização
+   X - criação de LIB
 
 ###############################################
 
@@ -53,5 +53,5 @@ GERAL
     - diagrama com a arquitetura do programa e mecanismos de sincronização
         (figura 2 com mais detalhe)
 
-    - inicialização dos mutexes, semáforos e cond_vars
+   X - inicialização dos mutexes, semáforos e cond_vars
 
