@@ -12,7 +12,10 @@ Phase 2
    X - Criação de processos GESTOR DE CORRIDA e GESTOR DE AVARIAS
    X - Criação da shared memory
 
+Phase 3
 
+   - Captura de SINAIS e encaminhamento
+   - Captura de INPUT e encaminhamento
 
 ###########################################
 
@@ -21,6 +24,8 @@ GESTOR DE CORRIDA - proccess
 
    X - Criação de processos de GESTOR DE EQUIPA 
 
+
+   - Captura de sinais e encaminhamento
 
 
 ###################################################
