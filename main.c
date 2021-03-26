@@ -49,7 +49,7 @@ int shmid;
 int main(int argc, char **argv) {
 
     int status = 0; // status codes for commands
-
+    init_log();
 
     // check parameters
     if (argc != 2) {
@@ -91,9 +91,14 @@ int main(int argc, char **argv) {
         exit(0);
     }
 
+    plog("SIMULATOR STARTING");
+
     wait(NULL);
     wait(NULL);
 
+    plog("SIMULATOR CLOSING");
+
+    close_log();
     clean_all_shared(shmem, shmid);
     exit(0);
 }

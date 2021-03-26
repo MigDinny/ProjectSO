@@ -18,5 +18,5 @@
 
 void breakdown_manager_worker(shmem_t *shmem) {
     sleep(3);
-    printf("test: %d", shmem->test);
+    plog("BREAKDOWN MANAGER STARTED");
 }

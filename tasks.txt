@@ -55,6 +55,7 @@ FICHEIRO LOG - file & lib
    X - criação de LIB
 
    X - TIMESTAMP
+   R - dlog function
 
 ###############################################
 
