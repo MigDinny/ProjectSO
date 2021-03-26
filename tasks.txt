@@ -19,7 +19,7 @@ Phase 2
 
 GESTOR DE CORRIDA - proccess
 
-    - Criação de processos de GESTOR DE EQUIPA 
+   X - Criação de processos de GESTOR DE EQUIPA 
 
 
 
@@ -28,7 +28,7 @@ GESTOR DE CORRIDA - proccess
 
 GESTOR DE EQUIPA - proccess
 
-    - Criação de threads CARRO
+   X - Criação de threads CARRO
 
 
 ################################################ IGNORAR

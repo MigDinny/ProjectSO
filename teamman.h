@@ -4,4 +4,4 @@
 #include "sharedmem.h"
 
 
-void team_manager_worker(shmem_t*);
+void team_manager_worker(shmem_t*, int);

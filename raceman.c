@@ -14,7 +14,7 @@ void race_manager_worker(shmem_t *shmem) {
     // creates TEAM_MANGERS
     for (int i = 0; i < shmem->config.nTeams; i++) {
         if(fork() == 0){
-            team_manager_worker(shmem);
+            team_manager_worker(shmem, i);
             exit(0);
         }
     }
