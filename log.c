@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "log.h"
+#include "include.h"
 
 FILE *logfile;
 

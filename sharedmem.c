@@ -8,7 +8,6 @@
 
 */
 
-#include "sharedmem.h"
 #include <unistd.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -16,6 +15,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <semaphore.h>
+
+#include "include.h"
 
 /*
     @TODO: #4 init shmem values!!! they probably must not be null or 0.

@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "config.h"
+#include "include.h"
 
 
 // remove all spaces from a string

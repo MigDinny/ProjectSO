@@ -25,8 +25,9 @@ GESTOR DE CORRIDA - proccess
 
    X - Criação de processos de GESTOR DE EQUIPA 
 
-
    - Captura de sinais e encaminhamento
+
+   - Funções de input de string, validação e encaminhamento
 
 
 ###################################################
@@ -52,6 +53,8 @@ FICHEIRO LOG - file & lib
    X - output para file e ecrã com sincronização
    X - criação de LIB
 
+   - TIMESTAMP
+
 ###############################################
 
 GERAL
@@ -60,4 +63,3 @@ GERAL
         (figura 2 com mais detalhe)
 
    X - inicialização dos mutexes, semáforos e cond_vars
-
