@@ -16,7 +16,8 @@ Phase 3
 
    - Captura de SINAIS e encaminhamento
    - Captura de INPUT e encaminhamento
-
+   - criar structs de carro e equipa
+   
 ###########################################
 
 

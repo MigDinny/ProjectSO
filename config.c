@@ -99,7 +99,6 @@ int load_config(config_t *c, char *filename) {
         return 1;
     }
 
-    // TODO: debug next lines, config NULL
     // set values in struct
     c->time = values[0];
     c->dist = values[1];
