@@ -16,9 +16,7 @@
 #include <sys/wait.h>
 #include <semaphore.h>
 
-#include "sharedmem.h"
-#include "config.h"
-#include "teamman.h"
+#include "include.h"
 
 /*
     @TODO: #4 init shmem values!!! they probably must not be null or 0.

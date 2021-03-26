@@ -14,9 +14,8 @@
 #include <unistd.h> 
 #include <wait.h>
 
-#include "raceman.h"
-#include "teamman.h"
-#include "sharedmem.h"
+
+#include "include.h"
 
 
 void race_manager_worker(shmem_t *shmem) {

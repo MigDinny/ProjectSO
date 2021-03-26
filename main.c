@@ -21,10 +21,7 @@
 /*
     Include project libraries
 */
-#include "config.h"
-#include "sharedmem.h"
-#include "raceman.h"
-#include "breakdownman.h"
+#include "include.h"
 
 
 /*
