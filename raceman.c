@@ -19,6 +19,6 @@ void race_manager_worker(shmem_t *shmem) {
         }
     }
 
-    wait(NULL);
+    for (int i = 0; i < shmem->config.nTeams; i++) wait(NULL);
     
 }
