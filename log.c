@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "include.h"
 
@@ -33,8 +34,16 @@ int close_log() {
 }
 
 int plog(char line[MAX_SIZE]) {
+    char timestr[10];
 
-    printf("%s\n", line);
+    time_t timer;
+    struct tm* tm_info;
+    timer = time(NULL);
+    tm_info = localtime(&timer);
+    strftime(timestr, 10, "%H:%M:%S ", tm_info);
+
+    printf("%s%s\n", timestr, line);
+    fwrite(timestr, sizeof(char),strlen(timestr), logfile);
     fwrite(line, sizeof(char), strlen(line), logfile);
     fwrite("\n", sizeof(char), 2, logfile);
 
