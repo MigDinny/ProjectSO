@@ -10,6 +10,15 @@
 
 #include <semaphore.h>
 
+
+#define MAX_CHAR_LINE 20
+#define MAX_LINES 7
+
+#define MAX_TEAM_NAME 50
+#define MAX_CARS 10
+
+#define MAX_TEAMS 10
+
 // STRUCTS 
 
 typedef struct config_t {
@@ -24,13 +33,34 @@ typedef struct config_t {
     int fuelTank; 
 } config_t;
 
+typedef struct car_t {
+    int carNum;
+    int speed;
+    float consumption;
+    float reliability;
+
+} car_t;
+
+typedef struct team_t {
+    char teamName[MAX_TEAM_NAME];
+    struct car_t cars[MAX_CARS];
+
+
+} team_t;
+
+
 typedef struct shmem_t {
+    team_t teams[MAX_TEAMS];
 
     int test;
     sem_t *mutex; 
     config_t config;
 
 } shmem_t;
+
+
+
+
 
 
 // LOG
@@ -47,8 +77,6 @@ int plog(char [MAX_SIZE]);
 // CONFIG
 
 
-#define MAX_CHAR_LINE 20
-#define MAX_LINES 7
 
 void remove_spaces(char *);
 

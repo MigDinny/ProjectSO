@@ -19,12 +19,15 @@
 
 
 void race_manager_worker(shmem_t *shmem) {
-        // TODO: proccess
+
+    int id[shmem->config.nTeams];
 
     // creates TEAM_MANGERS
     for (int i = 0; i < shmem->config.nTeams; i++) {
+        id[i] = i;
+
         if(fork() == 0){
-            team_manager_worker(shmem, i);
+            team_manager_worker(shmem, id[i]);
             exit(0);
         }
     }
