@@ -10,6 +10,13 @@
 
 #pragma once
 
-#include "sharedmem.h"
+
+typedef struct car_t {
+    int carNum;
+    int speed;
+    float consumption;
+    float reliability;
+
+} car_t;
 
 void *car_worker();

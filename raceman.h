@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "config.h"
 #include "sharedmem.h"
 
 

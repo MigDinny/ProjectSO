@@ -13,8 +13,12 @@
 #include <semaphore.h>
 
 #include "config.h"
+#include "teamman.h"
+
+#define MAX_TEAMS 10
 
 typedef struct shmem_t {
+    team_t teams[MAX_TEAMS];
 
     int test;
     sem_t *mutex; 

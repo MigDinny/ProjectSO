@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 #include "teamman.h"
+#include "sharedmem.h"
 #include "car.h"
 
 

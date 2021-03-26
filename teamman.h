@@ -10,8 +10,17 @@
 
 #pragma once
 
-#include "config.h"
+#include "car.h"
 #include "sharedmem.h"
 
+#define MAX_TEAM_NAME 50
+#define MAX_CARS 10
+
+typedef struct team_t {
+    char teamName[MAX_TEAM_NAME];
+    struct car_t cars[MAX_CARS];
+
+
+} team_t;
 
 void team_manager_worker(shmem_t*, int);
