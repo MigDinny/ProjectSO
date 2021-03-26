@@ -11,9 +11,7 @@
 #include <pthread.h>
 #include <stdio.h>
 
-#include "teamman.h"
-#include "car.h"
-
+#include "include.h"
 
 void team_manager_worker(shmem_t *shmem, int teamID) {
 
