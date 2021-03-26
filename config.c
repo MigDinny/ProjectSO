@@ -38,17 +38,18 @@ int load_config(config_t *c, char *filename) {
     char lines[MAX_LINES][MAX_CHAR_LINE];
     char *aux;
 
-    int nLines, ind = 0; 
+    int nLines = 0, ind = 0; 
     int values[9] = { 0 };
 
     // read confiFile
     while(fgets(lines[nLines], MAX_CHAR_LINE, configFile) != NULL && nLines < MAX_LINES) {
         nLines++;
     }
+
+    fclose(configFile);
     
     // if no of lines is different from MAX_LINES return -2 
     if (nLines != MAX_LINES) {
-        fclose(configFile);
         return 2;
     }
 
@@ -82,8 +83,6 @@ int load_config(config_t *c, char *filename) {
             ind++; 
         }
     }
-
-    fclose(configFile);
     
     // return -1 in case the values are invalid
     if (values[3] < 3 || values[0] < 1 || values[1] < 1 || values[2] < 1 || values[4] < 1 || values[5] < 1 || values[6] < 1 || values[7] < 1 || values[8] < 1 ) {
