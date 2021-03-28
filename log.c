@@ -67,3 +67,10 @@ int plog(char line[MAX_SIZE]) {
     return 0;
 }
 
+int dlog(char line[MAX_SIZE]) {
+    if (DEBUG) {
+        printf("DEBUG: %s\n", line);
+    }
+    return 0;
+}
+

@@ -15,7 +15,7 @@ Phase 2
 Phase 3
 
    M - Captura de SINAIS e encaminhamento
-   R - Captura de INPUT e encaminhamento
+   X - Captura de INPUT e encaminhamento
    X - criar structs de carro e equipa
    
 ###########################################
@@ -28,6 +28,8 @@ GESTOR DE CORRIDA - proccess
    M - Captura de sinais e encaminhamento
 
    R - Funções de input de string, validação e encaminhamento
+
+   - Criação das funções de adição e sincronização
 
 
 ###################################################
@@ -55,8 +57,8 @@ FICHEIRO LOG - file & lib
    X - criação de LIB
 
    X - TIMESTAMP
-   R - dlog function
-   - funções com sicronização
+   X - dlog function
+   X - funções com sicronização
 
 ###############################################
 
