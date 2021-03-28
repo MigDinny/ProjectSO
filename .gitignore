@@ -3,3 +3,5 @@
 formula1.exe
 formula1
 *.stackdump
+.vscode/settings.json
+log.txt

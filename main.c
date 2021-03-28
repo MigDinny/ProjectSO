@@ -6,7 +6,6 @@
     @author Rodrigo Ferreira | 2019220060 | rferreira@student.dei.uc.pt | github.com/IronMan988
 
 
-
 */
 
 /*
@@ -15,12 +14,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <semaphore.h>
+#include <sys/types.h> 
+#include <unistd.h> 
+#include <sys/wait.h>
 
 /*
     Include project libraries
 */
-#include "config.h"
-#include "sharedmem.h"
+#include "include.h"
+
 
 /*
     Constants
@@ -32,7 +34,7 @@
 */
 shmem_t *shmem; // shared memory struct POINTER
 int shmid;
-sem_t *mutex; 
+
 
 /*
     main function
@@ -47,7 +49,7 @@ sem_t *mutex;
 int main(int argc, char **argv) {
 
     int status = 0; // status codes for commands
-
+    init_log();
 
     // check parameters
     if (argc != 2) {
@@ -65,7 +67,7 @@ int main(int argc, char **argv) {
 
 
     // init semaphore to MUTEX shared memory
-    mutex = init_shared_memory_mutex();
+    shmem->mutex = init_shared_memory_mutex();
 
 
     // check config loading
@@ -75,6 +77,28 @@ int main(int argc, char **argv) {
     }
 
 
-    clean_all_shared(mutex, shmem, shmid);
+    // create RACE MANAGER proccess
+    if (fork() == 0) {
+        // inside child, call worker
+        race_manager_worker(shmem);
+        exit(0);
+    }
+
+    // create BREAKDOWN MANAGER proccess
+    if (fork() == 0) {
+        // inside child, call worker
+        breakdown_manager_worker(shmem);
+        exit(0);
+    }
+
+    plog("SIMULATOR STARTING");
+
+    wait(NULL);
+    wait(NULL);
+
+    plog("SIMULATOR CLOSING");
+
+    close_log();
+    clean_all_shared(shmem, shmid);
     exit(0);
 }

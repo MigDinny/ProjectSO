@@ -2,25 +2,32 @@ SIMULADOR DE CORRIDA - MAIN PROCCESS
 
 Phase 1
 
-    - arranque do server
-    - leitura do config
-    - validação dos dados config
-    - aplicação das config (numa structure)
+   X - arranque do server
+   X - leitura do config
+   X - validação dos dados config
+   X - aplicação das config (numa structure)
 
 Phase 2
 
-    - Criação de processos GESTOR DE CORRIDA e GESTOR DE AVARIAS
-    - Criação da shared memory
+   X - Criação de processos GESTOR DE CORRIDA e GESTOR DE AVARIAS
+   X - Criação da shared memory
 
+Phase 3
 
-
+   M - Captura de SINAIS e encaminhamento
+   R - Captura de INPUT e encaminhamento
+   X - criar structs de carro e equipa
+   
 ###########################################
 
 
 GESTOR DE CORRIDA - proccess
 
-    - Criação de processos de GESTOR DE EQUIPA 
+   X - Criação de processos de GESTOR DE EQUIPA 
 
+   M - Captura de sinais e encaminhamento
+
+   R - Funções de input de string, validação e encaminhamento
 
 
 ###################################################
@@ -28,14 +35,15 @@ GESTOR DE CORRIDA - proccess
 
 GESTOR DE EQUIPA - proccess
 
-    - Criação de threads CARRO
+   X - Criação de threads CARRO
 
 
 ################################################ IGNORAR
 
 GESTOR DE AVARIAS - processos (não necessário para defesa intermédia)
 
-    - Gera avarias nos threads CARRO consoante a sua fiabilidade
+   - Gera avarias nos threads CARRO consoante a sua fiabilidade
+   M - loop sleep para gerar as avarias
 
 
 ##############################################
@@ -43,15 +51,18 @@ GESTOR DE AVARIAS - processos (não necessário para defesa intermédia)
 FICHEIRO LOG - file & lib
 
 
-    - output para file e ecrã com sincronização
-    - criação de LIB
+   X - output para file e ecrã com sincronização
+   X - criação de LIB
+
+   X - TIMESTAMP
+   R - dlog function
+   - funções com sicronização
 
 ###############################################
 
 GERAL
 
-    - diagrama com a arquitetura do programa e mecanismos de sincronização
+   - diagrama com a arquitetura do programa e mecanismos de sincronização
         (figura 2 com mais detalhe)
 
-    - inicialização dos mutexes, semáforos e cond_vars
-
+   X - inicialização dos mutexes, semáforos e cond_vars

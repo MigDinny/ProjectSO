@@ -1,9 +1,19 @@
+/*
+
+    Operating Systems - Final Project
+
+    @author Miguel Dinis | 2019219010 | miguelbarroso@student.dei.uc.pt | github.com/MigDinny
+    @author Rodrigo Ferreira | 2019220060 | rferreira@student.dei.uc.pt | github.com/IronMan988
+
+
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-#include "log.h"
+#include "include.h"
 
 FILE *logfile;
 
@@ -24,14 +34,16 @@ int close_log() {
 }
 
 int plog(char line[MAX_SIZE]) {
-    char timestr[12];
+    char timestr[10];
 
-    time_t timer = time(NULL);
-    struct tm* tm_info = localtime(&timer);
-    strftime(timestr, 12, "%H:%M:%S ", tm_info);
+    time_t timer;
+    struct tm* tm_info;
+    timer = time(NULL);
+    tm_info = localtime(&timer);
+    strftime(timestr, 10, "%H:%M:%S ", tm_info);
 
     printf("%s%s\n", timestr, line);
-    fwrite(timestr, sizeof(char), strlen(timestr), logfile);
+    fwrite(timestr, sizeof(char),strlen(timestr), logfile);
     fwrite(line, sizeof(char), strlen(line), logfile);
     fwrite("\n", sizeof(char), 2, logfile);
 
