@@ -47,6 +47,8 @@ int close_log() {
 }
 
 int plog(char line[MAX_SIZE]) {
+    sem_wait(logMutex);     //wait to write on file
+    
     char timestr[10];
 
     time_t timer;
@@ -54,8 +56,6 @@ int plog(char line[MAX_SIZE]) {
     timer = time(NULL);
     tm_info = localtime(&timer);
     strftime(timestr, 10, "%H:%M:%S ", tm_info);
-
-    sem_wait(logMutex);     //wait to write on file
 
     printf("%s%s\n", timestr, line);
     fwrite(timestr, sizeof(char),strlen(timestr), logfile);
