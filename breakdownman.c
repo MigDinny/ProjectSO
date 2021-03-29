@@ -11,12 +11,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <signal.h>
 
 #include "include.h"
 
 
 void breakdown_manager_worker(shmem_t *shmem) {
+
     sleep(3);
     plog("BREAKDOWN MANAGER STARTED");
 }
