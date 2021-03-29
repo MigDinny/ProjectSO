@@ -14,8 +14,8 @@ Phase 2
 
 Phase 3
 
-   M - Captura de SINAIS e encaminhamento
-   R - Captura de INPUT e encaminhamento
+   X - Captura de SINAIS e encaminhamento
+   X - Captura de INPUT e encaminhamento
    X - criar structs de carro e equipa
    
 ###########################################
@@ -25,7 +25,7 @@ GESTOR DE CORRIDA - proccess
 
    X - Criação de processos de GESTOR DE EQUIPA 
 
-   M - Captura de sinais e encaminhamento
+   X - Captura de sinais e encaminhamento
 
    R - Funções de input de string, validação e encaminhamento
 

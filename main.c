@@ -36,6 +36,33 @@ shmem_t *shmem; // shared memory struct POINTER
 int shmid;
 
 
+void terminate() {
+    plog("SIMULATOR CLOSING");
+
+    close_log();
+    clean_all_shared(shmem, shmid);
+    exit(0);
+}
+
+void sigint(int signum) {
+
+    printf(" SIGINT detected\n");
+
+    //stats();
+
+    terminate();
+}
+
+void sigtstp(int signum) {
+    
+    signal(SIGTSTP, sigtstp);
+
+    printf(" SIGTSTP detected\n");
+
+    // stats();
+}
+
+
 /*
     main function
     run as: ./formula1 [config-filename] 
@@ -47,6 +74,11 @@ int shmid;
         5 - problem loading config
 */
 int main(int argc, char **argv) {
+
+    // We need to ignore all signals first so the child processes inherit SIG_IGN.
+    signal(SIGTSTP, SIG_IGN); // prevent this process to be suspended!
+    signal(SIGUSR1, SIG_IGN); // prevent this process to die!
+    signal(SIGINT, SIG_IGN); // prevent this process to die!
 
     int status = 0; // status codes for commands
     init_log();
@@ -77,12 +109,16 @@ int main(int argc, char **argv) {
     }
 
 
+    // logging the first message
+    plog("SIMULATOR STARTING");
+
     // create RACE MANAGER proccess
     if (fork() == 0) {
         // inside child, call worker
         race_manager_worker(shmem);
         exit(0);
     }
+
 
     // create BREAKDOWN MANAGER proccess
     if (fork() == 0) {
@@ -91,14 +127,22 @@ int main(int argc, char **argv) {
         exit(0);
     }
 
-    plog("SIMULATOR STARTING");
+    // initializing the SIGNAL redirections
+    signal(SIGINT, sigint); // CTRL C
+    signal(SIGTSTP, sigtstp); // CTRL Z
 
-    wait(NULL);
-    wait(NULL);
 
-    plog("SIMULATOR CLOSING");
+    // loop receiving input to send to RACE MANAGER through PIPE
+    char line[100];
 
-    close_log();
-    clean_all_shared(shmem, shmid);
-    exit(0);
+    while (1) {
+
+        fgets(line, 100, stdin);
+        printf("%s", line);
+    }
+
+
+    // exited NOT through terminate() called by CTRL-C.
+    // can we get even here? infinite loop before...
+    exit(6);
 }
