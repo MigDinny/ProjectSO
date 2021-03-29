@@ -119,7 +119,6 @@ int main(int argc, char **argv) {
         race_manager_worker(shmem);
         exit(0);
     }
-    plog("SIMULATOR STARTING");
 
 
     // create BREAKDOWN MANAGER proccess
