@@ -59,7 +59,7 @@ int plog(char line[MAX_SIZE]) {
     strftime(timestr, 10, "%H:%M:%S ", tm_info);
 
     printf("%s%s\n", timestr, line);
-    fprintf(logfile, "%s%s %d\n", timestr, line, getpid());
+    fprintf(logfile, "%s%s\n", timestr, line);
     fflush(logfile);
 
     sem_post(logMutex);     // free mutex for next writer
