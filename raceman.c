@@ -16,6 +16,7 @@
 #include <wait.h>
 #include <string.h>
 
+#include <signal.h>
 
 #include "include.h"
 
@@ -90,7 +91,16 @@ void receive_commands(){
 }
 
 
+void sigusr1(int signum) {
+
+    plog("SIGUSR1 received, race interrupted!");
+
+    // stats();
+}
+
 void race_manager_worker(shmem_t *shmem) {
+
+    signal(SIGUSR1, sigusr1); // interrupt race!
 
     int id[shmem->config.nTeams];
 
