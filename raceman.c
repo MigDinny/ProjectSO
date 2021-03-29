@@ -105,7 +105,7 @@ void race_manager_worker(shmem_t *shmem) {
     }
 
     // needs to wait for all the program no initialize (breakdown manager) 
-    receive_commands();
+    //receive_commands();
 
     for (int i = 0; i < shmem->config.nTeams; i++) wait(NULL);
     

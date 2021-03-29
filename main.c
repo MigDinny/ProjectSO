@@ -76,6 +76,7 @@ int main(int argc, char **argv) {
         exit(5);
     }
 
+    
 
     // create RACE MANAGER proccess
     if (fork() == 0) {
@@ -83,6 +84,7 @@ int main(int argc, char **argv) {
         race_manager_worker(shmem);
         exit(0);
     }
+    plog("SIMULATOR STARTING");
 
     // create BREAKDOWN MANAGER proccess
     if (fork() == 0) {
@@ -91,7 +93,7 @@ int main(int argc, char **argv) {
         exit(0);
     }
 
-    plog("SIMULATOR STARTING");
+    
 
     wait(NULL);
     wait(NULL);

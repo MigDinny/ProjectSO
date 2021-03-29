@@ -47,22 +47,22 @@ int close_log() {
 }
 
 int plog(char line[MAX_SIZE]) {
-    char timestr[10];
 
+    sem_wait(logMutex);     // wait to write on file
+
+    char timestr[10];
     time_t timer;
     struct tm* tm_info;
+    
     timer = time(NULL);
     tm_info = localtime(&timer);
     strftime(timestr, 10, "%H:%M:%S ", tm_info);
 
-    sem_wait(logMutex);     //wait to write on file
-
     printf("%s%s\n", timestr, line);
-    fwrite(timestr, sizeof(char),strlen(timestr), logfile);
-    fwrite(line, sizeof(char), strlen(line), logfile);
-    fwrite("\n", sizeof(char), 2, logfile);
+    fprintf(logfile, "%s%s %d\n", timestr, line, getpid());
 
-    sem_post(logMutex);     //free mutex for next writer
+
+    sem_post(logMutex);     // free mutex for next writer
 
     return 0;
 }
