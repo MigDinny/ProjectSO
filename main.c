@@ -109,6 +109,9 @@ int main(int argc, char **argv) {
     }
 
 
+    // logging the first message
+    plog("SIMULATOR STARTING");
+
     // create RACE MANAGER proccess
     if (fork() == 0) {
         // inside child, call worker
@@ -124,9 +127,6 @@ int main(int argc, char **argv) {
         exit(0);
     }
 
-    // logging the first message
-    plog("SIMULATOR STARTING");
-    
     // initializing the SIGNAL redirections
     signal(SIGINT, sigint); // CTRL C
     signal(SIGTSTP, sigtstp); // CTRL Z
