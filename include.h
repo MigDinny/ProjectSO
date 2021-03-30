@@ -10,10 +10,15 @@
 
 #include <semaphore.h>
 
+// RACEMAN
+#define MAX_COMMAND 100
 
+
+//CONFIG
 #define MAX_CHAR_LINE 20
 #define MAX_LINES 7
 
+//TEAM and CAR
 #define MAX_TEAMS 10
 #define BOX_STATUS_FREE 0
 #define BOX_STATUS_BUSY 1
@@ -26,6 +31,12 @@
 #define CAR_STATUS_BOX 2
 #define CAR_STATUS_NO_FUEL 3
 #define CAR_STATUS_FINISHED 4
+
+
+// LOG
+#define DEBUG 0
+#define MAX_SIZE 50
+
 
 
 // STRUCTS 
@@ -75,13 +86,13 @@ typedef struct shmem_t {
 
 // LOG
 
-#define MAX_SIZE 50
-
 int init_log();
 
 int close_log();
 
 int plog(char [MAX_SIZE]);
+
+int dlog(char [MAX_SIZE]);
 
 
 // CONFIG
@@ -96,6 +107,12 @@ int load_config(config_t*, char*);
 
 
 // RACE MANAGER
+
+void add_car();
+
+void start_race();
+
+void remove_commas(char *);
 
 void race_manager_worker(shmem_t*);
 
