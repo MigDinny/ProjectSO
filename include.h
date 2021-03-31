@@ -34,7 +34,7 @@
 
 
 // LOG
-#define DEBUG 0
+#define DEBUG
 #define MAX_SIZE 50
 
 
@@ -88,11 +88,11 @@ typedef struct shmem_t {
 
 int init_log();
 
-int close_log();
+void close_log();
 
-int plog(char [MAX_SIZE]);
+void plog(char [MAX_SIZE]);
 
-int dlog(char [MAX_SIZE]);
+void dlog(char [MAX_SIZE]);
 
 
 // CONFIG
