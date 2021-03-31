@@ -9,13 +9,10 @@
 */
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <semaphore.h>
 #include <sys/types.h> 
 #include <unistd.h> 
 #include <wait.h>
-#include <string.h>
-
 #include <signal.h>
 
 #include "include.h"
