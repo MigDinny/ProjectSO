@@ -1,3 +1,8 @@
+FOLHA A4 COM MECANISMOS DE SYNC
+
+ENTREGA/DEFESA 5/04
+
+_____
 SIMULADOR DE CORRIDA - MAIN PROCCESS
 
 Phase 1
@@ -31,7 +36,6 @@ GESTOR DE CORRIDA - proccess
 
    - Criação das funções de adição e sincronização
 
-
 ###################################################
 
 
@@ -40,7 +44,13 @@ GESTOR DE EQUIPA - proccess
    X - Criação de threads CARRO
 
 
-################################################ IGNORAR
+##############################################
+
+Carro - threads
+
+   - meter os carros a andar e a atualizar a sua posição 
+
+#############################################
 
 GESTOR DE AVARIAS - processos (não necessário para defesa intermédia)
 
@@ -57,8 +67,10 @@ FICHEIRO LOG - file & lib
    X - criação de LIB
 
    X - TIMESTAMP
+
    X - dlog function
    X - funções com sicronização
+
 
 ###############################################
 
