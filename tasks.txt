@@ -55,7 +55,7 @@ Carro - threads
 GESTOR DE AVARIAS - processos (não necessário para defesa intermédia)
 
    - Gera avarias nos threads CARRO consoante a sua fiabilidade
-   M - loop sleep para gerar as avarias
+   X - loop sleep para gerar as avarias
 
 
 ##############################################

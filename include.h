@@ -34,6 +34,7 @@
 
 
 // LOG
+
 #define DEBUG
 #define MAX_SIZE 50
 
@@ -60,7 +61,7 @@ typedef struct car_t {
     int status;
     int speed;
     float consumption;
-    float reliability;
+    int reliability;
 
 } car_t;
 
@@ -97,8 +98,6 @@ void dlog(char [MAX_SIZE]);
 
 // CONFIG
 
-
-
 void remove_spaces(char *);
 
 void check_commas(char *);
@@ -112,7 +111,9 @@ void add_car();
 
 void start_race();
 
-void remove_commas(char *);
+void remove_commas(char*);
+
+void check_input(char [MAX_COMMAND]);
 
 void race_manager_worker(shmem_t*);
 

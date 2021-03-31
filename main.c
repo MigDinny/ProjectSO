@@ -17,6 +17,7 @@
 #include <sys/types.h> 
 #include <unistd.h> 
 #include <sys/wait.h>
+#include <string.h>
 
 /*
     Include project libraries
@@ -62,6 +63,7 @@ void sigtstp(int signum) {
     // stats();
 }
 
+void send_pipe(char command[MAX_COMMAND]) {}
 
 /*
     main function
@@ -134,12 +136,10 @@ int main(int argc, char **argv) {
 
 
     // loop receiving input to send to RACE MANAGER through PIPE
-    char line[100];
-
-    while (1) {
-
-        fgets(line, 100, stdin);
-        printf("%s", line);
+    char command[MAX_COMMAND];
+    while(1) {
+        fgets(command, MAX_COMMAND, stdin);     // reads the command and removes \n
+        send_pipe(command);
     }
 
 
