@@ -63,7 +63,7 @@ void sigtstp(int signum) {
     // stats();
 }
 
-
+void send_pipe(char command[MAX_COMMAND]) {}
 
 /*
     main function
@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
     char command[MAX_COMMAND];
     while(1) {
         fgets(command, MAX_COMMAND, stdin);     // reads the command and removes \n
-        command_to_execute(command);
+        send_pipe(command);
     }
 
 

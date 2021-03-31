@@ -35,7 +35,7 @@ void remove_commas(char* str) {
     *pw = '\0';
 }
 
-void command_to_execute(char command[MAX_COMMAND]){
+void check_input(char command[MAX_COMMAND]){
 
     char copy[MAX_COMMAND];
     char *address[MAX_COMMAND];

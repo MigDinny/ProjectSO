@@ -112,7 +112,7 @@ void start_race();
 
 void remove_commas(char*);
 
-void command_to_execute(char [MAX_COMMAND]);
+void check_input(char [MAX_COMMAND]);
 
 void race_manager_worker(shmem_t*);
 
