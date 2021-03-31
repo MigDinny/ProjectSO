@@ -88,11 +88,11 @@ typedef struct shmem_t {
 
 int init_log();
 
-int close_log();
+void close_log();
 
-int plog(char [MAX_SIZE]);
+void plog(char [MAX_SIZE]);
 
-int dlog(char [MAX_SIZE]);
+void dlog(char [MAX_SIZE]);
 
 
 // CONFIG
@@ -109,6 +109,10 @@ int load_config(config_t*, char*);
 void add_car();
 
 void start_race();
+
+void remove_commas(char*);
+
+void command_to_execute(char [MAX_COMMAND]);
 
 void race_manager_worker(shmem_t*);
 
