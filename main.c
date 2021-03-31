@@ -108,6 +108,7 @@ int main(int argc, char **argv) {
         exit(5);
     }
 
+    
 
     // logging the first message
     plog("SIMULATOR STARTING");

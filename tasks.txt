@@ -34,7 +34,7 @@ GESTOR DE CORRIDA - proccess
 
    R - Funções de input de string, validação e encaminhamento
 
-   -
+   - Criação das funções de adição e sincronização
 
 ###################################################
 
@@ -67,8 +67,10 @@ FICHEIRO LOG - file & lib
    X - criação de LIB
 
    X - TIMESTAMP
-   R - dlog function
-   R - funções com sicronização
+
+   X - dlog function
+   X - funções com sicronização
+
 
 ###############################################
 
