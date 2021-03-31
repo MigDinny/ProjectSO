@@ -34,7 +34,8 @@
 
 
 // LOG
-#define DEBUG 0
+
+#define DEBUG
 #define MAX_SIZE 50
 
 

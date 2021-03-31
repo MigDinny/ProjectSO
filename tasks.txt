@@ -36,7 +36,6 @@ GESTOR DE CORRIDA - proccess
 
    - Criação das funções de adição e sincronização
 
-
 ###################################################
 
 
@@ -56,7 +55,7 @@ Carro - threads
 GESTOR DE AVARIAS - processos (não necessário para defesa intermédia)
 
    - Gera avarias nos threads CARRO consoante a sua fiabilidade
-   M - loop sleep para gerar as avarias
+   X - loop sleep para gerar as avarias
 
 
 ##############################################
@@ -68,8 +67,10 @@ FICHEIRO LOG - file & lib
    X - criação de LIB
 
    X - TIMESTAMP
+
    X - dlog function
    X - funções com sicronização
+
 
 ###############################################
 

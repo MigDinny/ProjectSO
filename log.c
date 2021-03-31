@@ -14,7 +14,6 @@
 #include <time.h>
 #include <semaphore.h>
 #include <pthread.h>
-
 #include <sys/fcntl.h>
 
 #include "include.h"
@@ -36,17 +35,15 @@ int init_log() {
     return 0;
 }
 
-int close_log() {
+void close_log() {
 
     fclose(logfile);
 
     sem_close(logMutex);
     sem_unlink("LOG_MUTEX");
-
-    return 0;
 }
 
-int plog(char line[MAX_SIZE]) {
+void plog(char line[MAX_SIZE]) {
 
     char timestr[10];
     time_t timer;
@@ -63,14 +60,11 @@ int plog(char line[MAX_SIZE]) {
     fflush(logfile);
 
     sem_post(logMutex);     // free mutex for next writer
-
-    return 0;
 }
 
-int dlog(char line[MAX_SIZE]) {
-    if (DEBUG) {
+void dlog(char line[MAX_SIZE]) {
+    #ifdef DEBUG
         printf("DEBUG: %s\n", line);
-    }
-    return 0;
+    #endif
 }
 
