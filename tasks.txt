@@ -23,7 +23,7 @@ Phase 3
    X - Captura de INPUT e encaminhamento
    X - criar structs de carro e equipa
    
-   - MEMÓRIA PARTILHADA DINAMICA PARA TEAMS E CARROS
+   X - MEMÓRIA PARTILHADA DINAMICA PARA TEAMS E CARROS
 
 ###########################################
 
@@ -51,7 +51,7 @@ GESTOR DE EQUIPA - proccess
 Carro - threads
 
    - meter os carros a andar e a atualizar a sua posição
-   - meter o ID na shmem
+   X - meter o ID na shmem
 
 #############################################
 
@@ -79,7 +79,7 @@ FICHEIRO LOG - file & lib
 
 GERAL
 
-   - diagrama com a arquitetura do programa e mecanismos de sincronização
+   X - diagrama com a arquitetura do programa e mecanismos de sincronização
         (figura 2 com mais detalhe)
 
    X - inicialização dos mutexes, semáforos e cond_vars
