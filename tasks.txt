@@ -23,6 +23,8 @@ Phase 3
    X - Captura de INPUT e encaminhamento
    X - criar structs de carro e equipa
    
+   - MEMÓRIA PARTILHADA DINAMICA PARA TEAMS E CARROS
+
 ###########################################
 
 
@@ -48,7 +50,8 @@ GESTOR DE EQUIPA - proccess
 
 Carro - threads
 
-   - meter os carros a andar e a atualizar a sua posição 
+   - meter os carros a andar e a atualizar a sua posição
+   - meter o ID na shmem
 
 #############################################
 

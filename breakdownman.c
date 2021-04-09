@@ -16,13 +16,13 @@
 #include "include.h"
 
 
-void breakdown_manager_worker(shmem_t *shmem) {
+void breakdown_manager_worker() {
     signal(SIGINT, SIG_DFL);
 
     plog("BREAKDOWN MANAGER STARTED");
 
-    int delay = shmem->config.tBreakDown;
-    float multiplier = 1/(shmem->config.time);
+    int delay = config.tBreakDown;
+    float multiplier = 1/(config.time);
 
     while (1) {
 
@@ -30,8 +30,7 @@ void breakdown_manager_worker(shmem_t *shmem) {
 
         // sleep until next calculation - delay is in seconds | * 1000 to convert to ms * 1000 to convert to us * multiplier 
         usleep(delay * 1000 * 1000 * multiplier);
-        plog("attempt to breakdown");
-        dlog("test");
+        dlog("attempt to breakdown");
     }
 
 }

@@ -16,10 +16,14 @@
 #include "include.h"
 
 
-void *car_worker(void *id) {
-    int my_id = *((int*) id);
+void *car_worker(void *car_index) {
+    int my_index = *((int*) car_index);
+
     sleep(5);
-    printf("car started [%d]\n", my_id);
+
+    printf("car started [%d]\n", my_index);
+
+    cars[my_index].carNum = my_index;
     
     pthread_exit(NULL);
 

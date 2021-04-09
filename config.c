@@ -41,7 +41,7 @@ void check_commas(char *str) {
     str[count] = '\0'; 
 }
 
-int load_config(config_t *c, char *filename) {
+int load_config(char *filename) {
 
     FILE *configFile = fopen(filename, "r");
     
@@ -100,15 +100,15 @@ int load_config(config_t *c, char *filename) {
     }
 
     // set values in struct
-    c->time = values[0];
-    c->dist = values[1];
-    c->nTurns = values[2];
-    c->nTeams = values[3];
-    c->nCars = values[4];
-    c->tBreakDown = values[5];
-    c->tMinBox = values[6];
-    c->tMaxBox = values[7];
-    c->fuelTank = values[8];
+    config.time = values[0];
+    config.dist = values[1];
+    config.nTurns = values[2];
+    config.nTeams = values[3];
+    config.nCars = values[4];
+    config.tBreakDown = values[5];
+    config.tMinBox = values[6];
+    config.tMaxBox = values[7];
+    config.fuelTank = values[8];
 
     return 0;
 }

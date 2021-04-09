@@ -22,11 +22,24 @@
     @TODO: #4 init shmem values!!! they probably must not be null or 0.
     first proccess to acquire lock to shared memory is kinda random which can bring some unexpected results
 */
-void *init_shared_memory(int *shmid) {
+int init_shared_memory() {
 
-    *shmid = shmget(IPC_PRIVATE, sizeof(shmem_t), IPC_CREAT|0666);
+    shmid = shmget(IPC_PRIVATE, sizeof(shmem_t) + sizeof(team_t)*config.nTeams + sizeof(car_t)*config.nTeams*config.nCars , IPC_CREAT|0700);
 
-    return shmat(*shmid, NULL, 0);
+	if (shmid < 0) return -1;
+	
+	shmem = (shmem_t*) shmat(shmid, NULL, 0);
+
+    if (shmem == (shmem_t*) - 1) return -1;
+	
+	// init values
+	
+	shmem->raceStatus = 0;
+	
+	teams = (team_t*) (shmem+1);
+	cars = (car_t*) (teams + config.nTeams);
+	
+	return 0;
 }
 
 sem_t *init_shared_memory_mutex() {
@@ -36,9 +49,9 @@ sem_t *init_shared_memory_mutex() {
     return sem_open("MUTEX", O_CREAT|O_EXCL,0700, 1);
 }
 
-void clean_all_shared( shmem_t *shmem, int shmid) {
+void clean_all_shared() {
 
-    sem_close(shmem->mutex);
+    sem_close(shmutex);
     sem_unlink("MUTEX");
     
 

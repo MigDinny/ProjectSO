@@ -102,22 +102,22 @@ void sigusr1(int signum) {
     // stats();
 }
 
-void race_manager_worker(shmem_t *shmem) {
+void race_manager_worker() {
 
     signal(SIGUSR1, sigusr1); // interrupt race!
 
-    int id[shmem->config.nTeams];
+    int id[config.nTeams];
 
     // creates TEAM_MANGERS
-    for (int i = 0; i < shmem->config.nTeams; i++) {
+    for (int i = 0; i < config.nTeams; i++) {
         id[i] = i;
 
         if(fork() == 0){
-            team_manager_worker(shmem, id[i]);
+            team_manager_worker(id[i]);
             exit(0);
         }
     }
 
-    for (int i = 0; i < shmem->config.nTeams; i++) wait(NULL);
+    for (int i = 0; i < config.nTeams; i++) wait(NULL);
     
 }

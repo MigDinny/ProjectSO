@@ -25,20 +25,13 @@
 #include "include.h"
 
 
-/*
-    Constants
-*/
-
-
-/*
-    Globals
-*/
-shmem_t *shmem; // shared memory struct POINTER
-int shmid;
-
-
 void terminate() {
     plog("SIMULATOR CLOSING");
+
+    
+    for (int i2 = 0; i2 < config.nTeams; i2++)
+        printf("cars[%d] = %s\n", i2, teams[i2].teamName);
+    
 
     close_log();
     clean_all_shared(shmem, shmid);
@@ -92,25 +85,24 @@ int main(int argc, char **argv) {
 	}
 
 
-    // init shared memory
-    shmem = init_shared_memory(&shmid);
-    if (shmid < 0) {
-        printf("ERROR init_shared_memory CODE [%d]", shmid);
+    // check config loading
+    if ( (status = load_config(argv[1])) != 0) {
+        printf("ERROR load_config CODE [%d]", status);
+        exit(5);
+    }
+	
+	
+	 // init shared memory
+    status = init_shared_memory();
+    if (status < 0) {
+        printf("ERROR init_shared_memory CODE [%d]", status);
         exit(4);
     }
 
 
     // init semaphore to MUTEX shared memory
-    shmem->mutex = init_shared_memory_mutex();
+    shmutex = init_shared_memory_mutex();
 
-
-    // check config loading
-    if ( (status = load_config(&(shmem->config), argv[1])) != 0) {
-        printf("ERROR load_config CODE [%d]", status);
-        exit(5);
-    }
-
-    
 
     // logging the first message
     plog("SIMULATOR STARTING");
