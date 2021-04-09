@@ -7,7 +7,7 @@
 
 
 */
-
+#pragma once
 #include <semaphore.h>
 
 
@@ -22,23 +22,14 @@
 //TEAM and CAR
 #define MAX_TEAM_NAME 20
 
-// @TODO: CREATE ENUMS FOR THESE (and for RACE_STATUS = 0FF/ON)
-#define BOX_STATUS_FREE 0
-#define BOX_STATUS_BUSY 1
-#define BOX_STATUS_RESERVED 2
-
-#define CAR_STATUS_RUNNING 0
-#define CAR_STATUS_SAFETY 1
-#define CAR_STATUS_BOX 2
-#define CAR_STATUS_NO_FUEL 3
-#define CAR_STATUS_FINISHED 4
-
+// ENUMS
+enum BOX_STATUS {FREE, BUSY, RESERVED};
+enum CAR_STATUS {RUNNING, SAFETY, BOX, NO_FUEL, FINISHED};
+enum RACE_STATUS {ON, OFF};
 
 // LOG
-
 #define DEBUG
 #define MAX_SIZE 50
-
 
 
 // STRUCTS 
@@ -59,7 +50,7 @@ typedef struct car_t {
     int carNum;
     int pos;
     int laps;
-    int status;
+    enum CAR_STATUS;
     int speed;
     float consumption;
     int reliability;
@@ -68,21 +59,17 @@ typedef struct car_t {
 
 typedef struct team_t {
     char teamName[MAX_TEAM_NAME];
-    int box;
+    enum BOX_STATUS;
 } team_t;
 
 typedef struct shmem_t {
 
-    int raceStatus;
-
+    enum RACE_STATUS;
 
 } shmem_t;
 
 
-
-/*
-    Globals
-*/
+// GLOBALS
 
 shmem_t *shmem; // shared memory struct POINTER
 team_t *teams;  // pointing to teams in shmem
