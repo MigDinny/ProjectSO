@@ -34,7 +34,7 @@ int init_shared_memory() {
 	
 	// init values
 	
-	shmem->raceStatus = 0;
+	shmem->status = OFF;
 	
 	teams = (team_t*) (shmem+1);
 	cars = (car_t*) (teams + config.nTeams);

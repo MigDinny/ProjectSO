@@ -22,7 +22,7 @@ void breakdown_manager_worker() {
     plog("BREAKDOWN MANAGER STARTED");
 
     int delay = config.tBreakDown;
-    float multiplier = 1/(config.time);
+    float multiplier = config.multiplier;
 
     while (1) {
 

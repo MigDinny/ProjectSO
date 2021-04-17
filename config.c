@@ -101,14 +101,15 @@ int load_config(char *filename) {
 
     // set values in struct
     config.time = values[0];
-    config.dist = values[1];
+    config.distance = values[1];
     config.nTurns = values[2];
     config.nTeams = values[3];
     config.nCars = values[4];
     config.tBreakDown = values[5];
     config.tMinBox = values[6];
     config.tMaxBox = values[7];
-    config.fuelTank = values[8];
+    config.fuelTank = (float) values[8];
+	config.multiplier = 1/(config.time);
 
     return 0;
 }
