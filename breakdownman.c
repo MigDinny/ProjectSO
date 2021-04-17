@@ -30,7 +30,7 @@ void breakdown_manager_worker() {
 
         // sleep until next calculation - delay is in seconds | * 1000 to convert to ms * 1000 to convert to us * multiplier 
         usleep(delay * 1000 * 1000 * multiplier);
-        dlog("attempt to breakdown");
+        //dlog("attempt to breakdown");
     }
 
 }

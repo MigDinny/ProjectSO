@@ -16,6 +16,9 @@
 
 void team_manager_worker(int teamID) {
 
+    // <<< DEBUG >>>
+    signal(SIGINT, SIG_DFL);
+
     pthread_t carThreadIds[config.nCars];           // move to shared memory
     int id[config.nCars];
 
