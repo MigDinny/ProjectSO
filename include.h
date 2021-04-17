@@ -11,6 +11,9 @@
 #include <semaphore.h>
 
 
+// MAIN
+#define PIPE_COMMANDS "np_main_raceman"
+
 // RACEMAN
 #define MAX_COMMAND 100
 
@@ -68,6 +71,10 @@ typedef struct shmem_t {
 
 } shmem_t;
 
+typedef struct command{
+    char command[MAX_COMMAND];
+} command;
+
 
 // GLOBALS
 
@@ -102,7 +109,7 @@ int load_config(char*);
 
 // RACE MANAGER
 
-void add_car();
+void add_car(char [MAX_TEAM_NAME], int, int, float, int);
 
 void start_race();
 

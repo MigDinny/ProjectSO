@@ -18,6 +18,9 @@
 #include <unistd.h> 
 #include <sys/wait.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
 
 /*
     Include project libraries
@@ -55,8 +58,6 @@ void sigtstp(int signum) {
 
     // stats();
 }
-
-void send_pipe(char command[MAX_COMMAND]) {}
 
 /*
     main function
@@ -126,13 +127,32 @@ int main(int argc, char **argv) {
     signal(SIGINT, sigint); // CTRL C
     signal(SIGTSTP, sigtstp); // CTRL Z
 
+    // init named PIPE between main and race manager
+    
+    if ((mkfifo(PIPE_COMMANDS, O_CREAT|O_EXCL|0600) < 0) && (errno != EEXIST)) {
+        printf("ERROR mkfifo CODE [%d]\n", errno);
+        exit(7);
+    }
+
+    int pCommands;
+    if ((pCommands = open(PIPE_COMMANDS, O_WRONLY)) < 0) {
+        printf("ERROR opening pipe %s for writting CODE [%d]\n", PIPE_COMMANDS, errno);
+        exit(8);
+    }
 
     // loop receiving input to send to RACE MANAGER through PIPE
-    char command[MAX_COMMAND];
+    
+    char cmdSend[MAX_COMMAND];
     while(1) {
-        fgets(command, MAX_COMMAND, stdin);     // reads the command and removes \n
-        send_pipe(command);
+        fgets(cmdSend, MAX_COMMAND, stdin);     // reads the command and removes \n
+        
+        command cmd;                            // sends the command
+        strcpy(cmd.command, cmdSend);
+        write(pCommands, &cmd, sizeof(cmd));
     }
+
+    close(pCommands);
+    unlink(PIPE_COMMANDS);
 
 
     // exited NOT through terminate() called by CTRL-C.
