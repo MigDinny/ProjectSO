@@ -7,7 +7,6 @@
 
 
 */
-#pragma once
 #include <semaphore.h>
 
 
@@ -53,7 +52,7 @@ typedef struct car_t {
     int carNum;
     int pos;
     int laps;
-    enum CAR_STATUS;
+    enum CAR_STATUS status;
     int speed;
     float consumption;
     int reliability;
@@ -62,12 +61,12 @@ typedef struct car_t {
 
 typedef struct team_t {
     char teamName[MAX_TEAM_NAME];
-    enum BOX_STATUS;
+    enum BOX_STATUS status;
 } team_t;
 
 typedef struct shmem_t {
 
-    enum RACE_STATUS;
+    enum RACE_STATUS status;
 
 } shmem_t;
 
