@@ -5,81 +5,50 @@ ENTREGA/DEFESA 5/04
 _____
 SIMULADOR DE CORRIDA - MAIN PROCCESS
 
-Phase 1
 
-   X - arranque do server
-   X - leitura do config
-   X - validação dos dados config
-   X - aplicação das config (numa structure)
-
-Phase 2
-
-   X - Criação de processos GESTOR DE CORRIDA e GESTOR DE AVARIAS
-   X - Criação da shared memory
-
-Phase 3
-
-   X - Captura de SINAIS e encaminhamento
-   X - Captura de INPUT e encaminhamento
-   X - criar structs de carro e equipa
-   
-   X - MEMÓRIA PARTILHADA DINAMICA PARA TEAMS E CARROS
 
 ###########################################
 
 
 GESTOR DE CORRIDA - proccess
 
-   X - Criação de processos de GESTOR DE EQUIPA 
-
-   X - Captura de sinais e encaminhamento
-
-   R - Funções de input de string, validação e encaminhamento
-
-   - Criação das funções de adição e sincronização
+   - recebe as notificações de término da corrida de cada carro, e espera que todos terminem para terminar a corrida e
+      comunicar a todos os team-managers
 
 ###################################################
 
 
 GESTOR DE EQUIPA - proccess
 
-   X - Criação de threads CARRO
+   - estabelecer comunicação com as threads carro para gerir entradas na box 
+   - efetuar refuel e reparação do carro na box (estabelecer um sistema para que o carro fique awaiting)
 
 
 ##############################################
 
 Carro - threads
 
-   - meter os carros a andar e a atualizar a sua posição
-   X - meter o ID na shmem
+   - unnamed pipes para comunicar com RACEMAN o seu estado 
+   - quando terminam, pthread_exit(NULL)
+   - notificar a sua team-manager que quer entrar na box 
+   - dar handle ao dar refuel + reparação
 
 #############################################
 
-GESTOR DE AVARIAS - processos (não necessário para defesa intermédia)
+GESTOR DE AVARIAS - processos
 
    - Gera avarias nos threads CARRO consoante a sua fiabilidade
-   X - loop sleep para gerar as avarias
-
+   - comunicar por message queue para os carros 
 
 ##############################################
 
 FICHEIRO LOG - file & lib
 
-
-   X - output para file e ecrã com sincronização
-   X - criação de LIB
-
-   X - TIMESTAMP
-
-   X - dlog function
-   X - funções com sicronização
+   - tentar fazer dlog() com formatação (algo como receber *args e enviar para o printf)
 
 
 ###############################################
 
 GERAL
 
-   X - diagrama com a arquitetura do programa e mecanismos de sincronização
-        (figura 2 com mais detalhe)
 
-   X - inicialização dos mutexes, semáforos e cond_vars
