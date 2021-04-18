@@ -11,7 +11,7 @@
 
 
 // MAIN
-#define PIPE_COMMANDS "np_main_raceman"
+#define PIPE_COMMANDS "/home/user/Desktop/np_main_raceman"
 
 // RACEMAN
 #define MAX_COMMAND 100
