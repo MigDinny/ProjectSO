@@ -32,9 +32,12 @@ void terminate() {
     plog("SIMULATOR CLOSING");
 
     
-    for (int i2 = 0; i2 < config.nTeams; i2++)
-        printf("cars[%d] = %s\n", i2, teams[i2].teamName);
+    /*for (int i2 = 0; i2 < config.nTeams; i2++)
+        printf("cars[%d] = %s\n", i2, teams[i2].teamName);*/
     
+
+    close(pCommands);
+    unlink(PIPE_COMMANDS);
 
     close_log();
     clean_all_shared(shmem, shmid);
@@ -134,7 +137,7 @@ int main(int argc, char **argv) {
         exit(7);
     }
 
-    int pCommands;
+    
     if ((pCommands = open(PIPE_COMMANDS, O_WRONLY)) < 0) {
         printf("ERROR opening pipe %s for writting CODE [%d]\n", PIPE_COMMANDS, errno);
         exit(8);
@@ -151,9 +154,7 @@ int main(int argc, char **argv) {
         write(pCommands, &cmd, sizeof(cmd));
     }
 
-    close(pCommands);
-    unlink(PIPE_COMMANDS);
-
+    /* DO NOT PUT ANY CODE BELOW HERE */
 
     // exited NOT through terminate() called by CTRL-C.
     // can we get even here? infinite loop before...
