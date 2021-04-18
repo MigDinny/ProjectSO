@@ -82,7 +82,7 @@ team_t *teams;  // pointing to teams in shmem
 car_t *cars;    // pointing to cars in shmem
 
 int shmid;
-int pCommands;
+int pCommandsWrite;
 config_t config;
 sem_t *shmutex;
 

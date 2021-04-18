@@ -21,7 +21,7 @@
 
 #include "include.h"
 
-
+int pCommandsRead;
 
 void add_car(char team[MAX_TEAM_NAME], int carNum, int speed, float consumption, int reliability){
     printf("car added: %s, %d, %d, %f, %d\n", team, carNum, speed, consumption, reliability);
@@ -110,17 +110,17 @@ void race_manager_worker() {
     signal(SIGUSR1, sigusr1); // interrupt race!
     signal(SIGINT, SIG_DFL);
     
+    // @TODO we need to close file descriptor pCommandsRead
+
     // opne PIPE_COMMANDS as read only
-    
-    int pCommands;
-    if ((pCommands = open(PIPE_COMMANDS, O_RDONLY)) < 0) {
+    if ((pCommandsRead = open(PIPE_COMMANDS, O_RDONLY)) < 0) {
         printf("ERROR opening pipe %s for writting CODE [%d]\n", PIPE_COMMANDS, errno);
         exit(1);
     }
 
     command cmd;
     while (1) {
-        read(pCommands, &cmd, sizeof(command));
+        read(pCommandsRead, &cmd, sizeof(command));
         printf("Received: %s", cmd.command);
         check_input(cmd.command);
     }

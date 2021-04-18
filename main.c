@@ -36,7 +36,7 @@ void terminate() {
         printf("cars[%d] = %s\n", i2, teams[i2].teamName);*/
     
 
-    close(pCommands);
+    close(pCommandsWrite);
     unlink(PIPE_COMMANDS);
 
     close_log();
@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
     }
 
     
-    if ((pCommands = open(PIPE_COMMANDS, O_WRONLY)) < 0) {
+    if ((pCommandsWrite = open(PIPE_COMMANDS, O_WRONLY)) < 0) {
         printf("ERROR opening pipe %s for writting CODE [%d]\n", PIPE_COMMANDS, errno);
         exit(8);
     }
@@ -151,7 +151,7 @@ int main(int argc, char **argv) {
         
         command cmd;                            // sends the command
         strcpy(cmd.command, cmdSend);
-        write(pCommands, &cmd, sizeof(cmd));
+        write(pCommandsWrite, &cmd, sizeof(cmd));
     }
 
     /* DO NOT PUT ANY CODE BELOW HERE */
