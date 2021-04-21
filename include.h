@@ -38,25 +38,29 @@ enum RACE_STATUS {ON, OFF};
 
 typedef struct config_t {
     int time;
-    int dist;
+    int distance;
     int nTurns;
     int nTeams;
     int nCars;
     int tBreakDown;
     int tMinBox;
     int tMaxBox;
-    int fuelTank; 
+    float fuelTank;
+	float multiplier;
 } config_t;
 
 typedef struct car_t {
-    int carNum;
-    int pos;
-    int laps;
-    enum CAR_STATUS status;
+	// from pipe - readonly
+	int carNum;
     int speed;
     float consumption;
     int reliability;
 
+	// control variables
+	float fuel; // current fuel
+	int pos; // current position
+    int laps; // laps
+	enum CAR_STATUS status;
 } car_t;
 
 typedef struct team_t {
