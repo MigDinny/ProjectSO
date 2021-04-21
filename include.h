@@ -14,7 +14,7 @@
 #define PIPE_COMMANDS "/home/user/Desktop/np_main_raceman"
 
 // RACEMAN
-#define MAX_COMMAND 100
+#define MAX_COMMAND 200
 
 
 //CONFIG
@@ -65,6 +65,7 @@ typedef struct car_t {
 
 typedef struct team_t {
     char teamName[MAX_TEAM_NAME];
+    int nCars;
     enum BOX_STATUS status;
 } team_t;
 
@@ -113,7 +114,11 @@ int load_config(char*);
 
 // RACE MANAGER
 
-void add_car(char [MAX_TEAM_NAME], int, int, float, int);
+int add_car(char [MAX_TEAM_NAME], int, int, float, int);
+
+int check_team(char [MAX_TEAM_NAME]);
+
+void add_teams(char [MAX_TEAM_NAME]);
 
 void start_race();
 

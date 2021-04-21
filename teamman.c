@@ -24,13 +24,13 @@ void team_manager_worker(int teamID) {
 
     sprintf(teams[teamID].teamName, "%s%d", "team", teamID);
 
-    for (int i = 0; i < config.nCars; i++) {                    // change the number of cars to the number given by command line
+    for (int i = 0; i < teams[teamID].nCars; i++) {                    // change the number of cars to the number given by command line
         id[i] = teamID*config.nCars + i;
 
         pthread_create(&carThreadIds[i], NULL, car_worker, &id[i]);
     }
 
-    for (int i = 0; i < config.nCars; i++) {     // change the number of cars to the number given by command line
+    for (int i = 0; i < teams[teamID].nCars; i++) {     // change the number of cars to the number given by command line
         pthread_join(carThreadIds[i], NULL);
     }
 }

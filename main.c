@@ -56,6 +56,7 @@ void sigint(int signum) {
 void sigtstp(int signum) {
     
     signal(SIGTSTP, sigtstp);
+    shmem->status = OFF;
 
     printf(" SIGTSTP detected\n");
 

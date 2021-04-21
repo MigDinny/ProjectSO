@@ -22,12 +22,72 @@
 #include "include.h"
 
 int pCommandsRead;
+int nTeams = 0;
 
-void add_car(char team[MAX_TEAM_NAME], int carNum, int speed, float consumption, int reliability){
-    printf("car added: %s, %d, %d, %f, %d\n", team, carNum, speed, consumption, reliability);
+
+void add_teams(char team[MAX_TEAM_NAME]) {      // create new team
+    strcpy(teams[nTeams].teamName, team);
+    teams[nTeams].nCars = 0;
+
+    nTeams++;
 }
 
-void start_race(){}
+int check_team(char team[MAX_TEAM_NAME]) {      // search for team, add it in case didn't found
+                                                // returns -1 in case the shmem is full
+    for (int i = 0; i < nTeams; i++) {
+        if (strcmp(teams[i].teamName, team) == 0) {
+            return i;
+        }
+    }
+    if (nTeams < config.nTeams) {
+        add_teams(team);
+        return nTeams - 1;
+    }
+    return -1;
+}
+
+int check_cars_nums() {
+    return 10
+}
+
+int add_car(char team[MAX_TEAM_NAME], int carNum, int speed, float consumption, int reliability){
+
+    int teamID = check_team(team);
+
+    if (teamID != -1) {
+        if(teams[teamID].nCars < config.nCars) {
+            cars[teamID*config.nCars + teams[teamID].nCars].carNum = carNum;
+            cars[teamID*config.nCars + teams[teamID].nCars].speed = speed;
+            cars[teamID*config.nCars + teams[teamID].nCars].consumption = consumption;
+            cars[teamID*config.nCars + teams[teamID].nCars].reliability = reliability;
+
+            teams[teamID].nCars++;
+        } else {
+            plog("CAN'T ADD MORE CARS TO THIS TEAM");
+            return -1;
+        }
+        
+    } else {
+        plog("CAN'T ADD MORE TEAMS");
+        return -1;
+    }
+    return 0;
+}
+
+void start_race(){
+    shmem->status = ON;     // mutex nedded
+    
+    int id[nTeams];
+
+    for (int i = 0; i < nTeams; i++) {
+        id[i] = i;
+
+        if(fork() == 0){
+            team_manager_worker(id[i]);
+            exit(0);
+        }
+    }
+}
 
 void remove_commas(char* str) {
     char *pr = str, *pw = str;
@@ -42,6 +102,7 @@ void check_input(char command[MAX_COMMAND]){
 
     char copy[MAX_COMMAND];
     char *address[MAX_COMMAND];
+    char reply[MAX_COMMAND];
         
     if (strlen(command) > 1) {
         command[strcspn(command, "\n")] = 0;
@@ -62,7 +123,7 @@ void check_input(char command[MAX_COMMAND]){
             remove_commas(address[i]);
         }
 
-        if (countWords == 11 && strcmp(address[0], "ADDCAR") == 0 && strcmp(address[1], "TEAM:") == 0 && 
+        if (shmem->status == OFF && countWords == 11 && strcmp(address[0], "ADDCAR") == 0 && strcmp(address[1], "TEAM:") == 0 && 
                         strcmp(address[3], "CAR:") == 0 && strcmp(address[5], "SPEED:") == 0 && 
                         strcmp(address[7], "CONSUMPTION:") == 0 && strcmp(address[9], "RELIABILITY:") == 0 ) {
 
@@ -70,33 +131,55 @@ void check_input(char command[MAX_COMMAND]){
             int speed = atoi(address[6]);
             float consumption = atof(address[8]);
             int reliability = atoi(address[10]);
-
+            
             if (carNum > 0 && speed > 0 && consumption > 0 && reliability > 0 && reliability < 100) {
-                char aux[MAX_COMMAND] = "NEW CAR LOADED => ";
-                strcat(aux, command);
-                plog(aux);
 
-                add_car(address[2], carNum, speed, consumption, reliability);                  // TODO: function
+                int error = add_car(address[2], carNum, speed, consumption, reliability);
+                if (error == 0) {
+                    sprintf(reply, "NEW CAR LOADED => %s", command);
+                    plog(reply);
+                }          
+
             } else {
-                char aux[MAX_COMMAND] = "WRONG COMMAND => ";
-                strcat(aux, command);
-                plog(aux);
+                sprintf(reply, "WRONG COMMAND => %s", command);
+                plog(reply);
             }
 
-        } else if (countWords == 2 && strcmp(address[0], "START") == 0 && strcmp(address[1], "RACE") == 0) {
-            char aux[MAX_COMMAND] = "NEW COMMAND RECEIVED: ";
-            strcat(aux, command);
-            plog(aux);
+        } else if (shmem->status == OFF && countWords == 2 && strcmp(address[0], "START") == 0 && strcmp(address[1], "RACE") == 0) {
+            if (nTeams >= 3) {
+                sprintf(reply, "NEW COMMAND RECEIVED: %s", command);
+                plog(reply);
 
-            start_race();                // TODO: function and verify current status
+                start_race();                // TODO: function and verify current status
+
+            } else if (nTeams < 3){             // check numbers of teams, at least 3 
+                sprintf(reply, "CANNOT START, NOT ENOUGH TEAMS");
+                plog(reply);
+
+            } else {
+                sprintf(reply, "COMMAND NOT ALLOWED, RACE ALREADY STARTED: %s", command);
+                plog(reply);
+            }
+
+        } else if (strcmp(command, "pSHMEM") == 0) {                // print shmem, remove for final version
+            printf("!%d!\n", shmem->status);
+            for (int i = 0; i < nTeams; i++) {
+                for(int j = 0; j < teams[i].nCars; j++) {
+                    printf("Team %d; Car %d_%d\n", i, j, cars[i*config.nCars + j].speed);
+                }
+            }
+
+        } else if (shmem->status == OFF) {
+            sprintf(reply, "WRONG COMMAND => %s", command);
+            plog(reply);
 
         } else {
-            char aux[MAX_COMMAND] = "WRONG COMMAND => ";
-            strcat(aux, command);
-            plog(aux);
+            sprintf(reply, "COMMAND NOT ALLOWED, RACE ALREADY STARTED: %s", command);
+            plog(reply);
         }
     }
 }
+
 
 void sigusr1(int signum) {
 
@@ -121,24 +204,11 @@ void race_manager_worker() {
     command cmd;
     while (1) {
         read(pCommandsRead, &cmd, sizeof(command));
-        printf("Received: %s", cmd.command);
+        //printf("Received: %s", cmd.command);
         check_input(cmd.command);
     }
     
 
-    //int id[config.nTeams];
-
-    // creates TEAM_MANGERS
-    /*
-    for (int i = 0; i < config.nTeams; i++) {
-        id[i] = i;
-
-        if(fork() == 0){
-            team_manager_worker(id[i]);
-            exit(0);
-        }
-    }
-
-    for (int i = 0; i < config.nTeams; i++) wait(NULL);*/
+    for (int i = 0; i < nTeams; i++) wait(NULL);
     
 }
