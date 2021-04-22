@@ -18,6 +18,9 @@
 #include <unistd.h> 
 #include <sys/wait.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
 
 /*
     Include project libraries
@@ -29,9 +32,12 @@ void terminate() {
     plog("SIMULATOR CLOSING");
 
     
-    for (int i2 = 0; i2 < config.nTeams; i2++)
-        printf("cars[%d] = %s\n", i2, teams[i2].teamName);
+    /*for (int i2 = 0; i2 < config.nTeams; i2++)
+        printf("cars[%d] = %s\n", i2, teams[i2].teamName);*/
     
+
+    close(pCommandsWrite);
+    unlink(PIPE_COMMANDS);
 
     close_log();
     clean_all_shared(shmem, shmid);
@@ -50,13 +56,12 @@ void sigint(int signum) {
 void sigtstp(int signum) {
     
     signal(SIGTSTP, sigtstp);
+    shmem->status = OFF;
 
     printf(" SIGTSTP detected\n");
 
     // stats();
 }
-
-void send_pipe(char command[MAX_COMMAND]) {}
 
 /*
     main function
@@ -126,14 +131,31 @@ int main(int argc, char **argv) {
     signal(SIGINT, sigint); // CTRL C
     signal(SIGTSTP, sigtstp); // CTRL Z
 
-
-    // loop receiving input to send to RACE MANAGER through PIPE
-    char command[MAX_COMMAND];
-    while(1) {
-        fgets(command, MAX_COMMAND, stdin);     // reads the command and removes \n
-        send_pipe(command);
+    // init named PIPE between main and race manager
+    
+    if ((mkfifo(PIPE_COMMANDS, O_CREAT|O_EXCL|0600) < 0) && (errno != EEXIST)) {
+        printf("ERROR mkfifo CODE [%d]\n", errno);
+        exit(7);
     }
 
+    
+    if ((pCommandsWrite = open(PIPE_COMMANDS, O_WRONLY)) < 0) {
+        printf("ERROR opening pipe %s for writting CODE [%d]\n", PIPE_COMMANDS, errno);
+        exit(8);
+    }
+
+    // loop receiving input to send to RACE MANAGER through PIPE
+    
+    char cmdSend[MAX_COMMAND];
+    while(1) {
+        fgets(cmdSend, MAX_COMMAND, stdin);     // reads the command and removes \n
+        
+        command cmd;                            // sends the command
+        strcpy(cmd.command, cmdSend);
+        write(pCommandsWrite, &cmd, sizeof(cmd));
+    }
+
+    /* DO NOT PUT ANY CODE BELOW HERE */
 
     // exited NOT through terminate() called by CTRL-C.
     // can we get even here? infinite loop before...

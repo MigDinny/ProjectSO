@@ -35,8 +35,7 @@ void team_manager_worker(int teamID) {
 
     sprintf(teams[teamID].teamName, "%s%d", "team", teamID);
 
-    // create threads
-    for (int i = 0; i < config.nCars; i++) {                    // change the number of cars to the number given by command line
+    for (int i = 0; i < teams[teamID].nCars; i++) {  
         id[i] = teamID*config.nCars + i;
         pthread_create(&carThreadIds[i], NULL, car_worker, &id[i]);
     }
@@ -72,11 +71,10 @@ void team_manager_worker(int teamID) {
         pthread_cond_signal(&out_box);
         pthread_mutex_unlock(&tc_mutex);
 
-
     }
 
     // wait for all threads 
-    for (int i = 0; i < config.nCars; i++) {     // change the number of cars to the number given by command line
+    for (int i = 0; i < teams[teamID].nCars; i++) { 
         pthread_join(carThreadIds[i], NULL);
     }
 

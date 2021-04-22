@@ -10,8 +10,11 @@
 #include <semaphore.h>
 
 
+// MAIN
+#define PIPE_COMMANDS "/home/user/Desktop/np_main_raceman"
+
 // RACEMAN
-#define MAX_COMMAND 100
+#define MAX_COMMAND 200
 
 
 //CONFIG
@@ -62,6 +65,7 @@ typedef struct car_t {
 
 typedef struct team_t {
     char teamName[MAX_TEAM_NAME];
+    int nCars;
     enum BOX_STATUS status;
 } team_t;
 
@@ -71,6 +75,10 @@ typedef struct shmem_t {
 
 } shmem_t;
 
+typedef struct command{
+    char command[MAX_COMMAND];
+} command;
+
 
 // GLOBALS
 
@@ -79,6 +87,7 @@ team_t *teams;  // pointing to teams in shmem
 car_t *cars;    // pointing to cars in shmem
 
 int shmid;
+int pCommandsWrite;
 config_t config;
 sem_t *shmutex;
 
@@ -105,7 +114,11 @@ int load_config(char*);
 
 // RACE MANAGER
 
-void add_car();
+int add_car(char [MAX_TEAM_NAME], int, int, float, int);
+
+int check_team(char [MAX_TEAM_NAME]);
+
+void add_teams(char [MAX_TEAM_NAME]);
 
 void start_race();
 

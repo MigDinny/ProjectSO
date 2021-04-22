@@ -20,7 +20,7 @@ void *car_worker(void *car_index) {
     int my_index = *((int*) car_index);
 	int team_index = my_index / config.nCars;
 
-	// <<< DEBUG - this must be set when ADD CAR is received >>>
+	/*// <<< DEBUG - this must be set when ADD CAR is received >>>
 		cars[my_index].carNum = my_index;
 		cars[my_index].speed = 20;
 		cars[my_index].consumption = 3;
@@ -29,7 +29,7 @@ void *car_worker(void *car_index) {
 		cars[my_index].pos = 0;
 		cars[my_index].laps = 0;
 		cars[my_index].status = RUNNING;
-	// <<< DEBUG >>>
+	// <<< DEBUG >>> */
 
 	// minimum fuel for 1, 2 or 4 laps
 	float fuel1 = cars[my_index].consumption * config.distance / cars[my_index].speed;
