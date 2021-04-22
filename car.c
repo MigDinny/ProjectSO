@@ -11,13 +11,14 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <pthread.h>
-
+#include <stdlib.h>
 
 #include "include.h"
 
 
 void *car_worker(void *car_index) {
     int my_index = *((int*) car_index);
+	int team_index = my_index / config.nCars;
 
 	// <<< DEBUG - this must be set when ADD CAR is received >>>
 		cars[my_index].carNum = my_index;
@@ -37,17 +38,9 @@ void *car_worker(void *car_index) {
 	int tryBox = 0; // 0 false 1 true
 
 	printf("%f %f %f\n", fuel1, fuel2, fuel4);
-
-	sleep(2);
-
-	// car started race
-    printf("car started [%d]\n", my_index);
 	
 	// each iteration is a TIME UNIT
 	while(1) {
-
-		// @TODO ACQUIRE MUTEXES and COND_VARS
-		// Wait for START RACE
 
 
 		// proccess a time unit
@@ -72,20 +65,51 @@ void *car_worker(void *car_index) {
 				pthread_exit(NULL);
 				// @TODO some trigger here
 			}
+
+			if (tryBox == 1) {
+				// we are in box, acquire lock 
+
+
+				pthread_mutex_lock(&tc_mutex);
+
+				// check if box is empty
+				if ( (teams[team_index].status == FREE) || (teams[team_index].status == RESERVED && cars[my_index].status == SAFETY) ) {
+					// change these variables so the condition breaks on the other side and it stops looping on cond_wait()
+					awaitingCars++;
+					if (cars[my_index].status == SAFETY) awaitingSafetyCars++;
+
+					boxCarIndex = my_index;
+
+					printf("[%d] in box\n", my_index);
+					// inside box
+					cars[my_index].status = BOX;
+					pthread_cond_signal(&in_box);
+					pthread_cond_wait(&out_box, &tc_mutex);
+					printf("[%d] left box\n", my_index);
+
+					// left box
+					tryBox = 0;
+					awaitingCars--;
+					if (cars[my_index].status == SAFETY) awaitingSafetyCars--;
+
+					cars[my_index].status = RUNNING;
+				}
+
+				pthread_mutex_unlock(&tc_mutex);
+			}
 		}
 
 		// check fuel
-		if (cars[my_index].fuel >= fuel4 && cars[my_index].fuel <  fuel4+fuel1 && tryBox != 1) {
+		if (cars[my_index].fuel >= fuel4 && cars[my_index].fuel < fuel4+fuel1 && tryBox != 1) {
 			// fuel for only 4 laps -> TRY TO GET INTO BOX
 			printf("[%d] try box\n", my_index);
 			tryBox = 1;
 
-			// @TODO some trigger here
 		} else if (cars[my_index].fuel >= fuel2 && cars[my_index].fuel < fuel2+fuel1 && cars[my_index].status != SAFETY) {
 			// fuel for only 2 laps -> SAFETY MODE
 			cars[my_index].status = SAFETY;
 			printf("[%d] safety mode\n", my_index);
-
+			
 			// @TODO some trigger here
 		} else if (cars[my_index].fuel <= 0) {
 			// NO FUEL 
@@ -98,7 +122,6 @@ void *car_worker(void *car_index) {
 
 		
 
-		
 		printf("[%d] m = %d  |  lap = %d  | fuel = %f\n", my_index, cars[my_index].pos, cars[my_index].laps, cars[my_index].fuel);
 		usleep(1 * 1000 * 1000 * config.multiplier); // sleep 1 TIME UNIT
 	}

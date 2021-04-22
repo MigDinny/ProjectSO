@@ -107,6 +107,7 @@ void race_manager_worker() {
     signal(SIGUSR1, sigusr1); // interrupt race!
 
     int id[config.nTeams];
+    shmem->status = ON;
 
     // creates TEAM_MANGERS
     for (int i = 0; i < config.nTeams; i++) {

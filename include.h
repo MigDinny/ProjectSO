@@ -117,8 +117,14 @@ void race_manager_worker();
 
 
 // TEAM MANAGER
-
+// below variables are cloned in each fork() of team-manager
 void team_manager_worker(int);
+int awaitingCars;
+int awaitingSafetyCars;
+int boxCarIndex;
+pthread_mutex_t tc_mutex;
+pthread_cond_t in_box;
+pthread_cond_t out_box;
 
 // CAR MANAGER
 
