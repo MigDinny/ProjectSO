@@ -47,7 +47,7 @@ int check_team(char team[MAX_TEAM_NAME]) {      // search for team, add it in ca
 }
 
 int check_cars_nums() {
-    return 10
+    return 10;
 }
 
 int add_car(char team[MAX_TEAM_NAME], int carNum, int speed, float consumption, int reliability){
@@ -56,10 +56,16 @@ int add_car(char team[MAX_TEAM_NAME], int carNum, int speed, float consumption, 
 
     if (teamID != -1) {
         if(teams[teamID].nCars < config.nCars) {
-            cars[teamID*config.nCars + teams[teamID].nCars].carNum = carNum;
-            cars[teamID*config.nCars + teams[teamID].nCars].speed = speed;
-            cars[teamID*config.nCars + teams[teamID].nCars].consumption = consumption;
-            cars[teamID*config.nCars + teams[teamID].nCars].reliability = reliability;
+            int ind = teamID*config.nCars + teams[teamID].nCars;
+            
+            cars[ind].carNum = carNum;
+            cars[ind].speed = speed;
+            cars[ind].consumption = consumption;
+            cars[ind].reliability = reliability;
+		    cars[ind].fuel = config.fuelTank;
+		    cars[ind].pos = 0;
+		    cars[ind].laps = 0;
+		    cars[ind].status = RUNNING;
 
             teams[teamID].nCars++;
         } else {
