@@ -33,6 +33,11 @@ enum RACE_STATUS {ON, OFF};
 
 // STRUCTS 
 
+typedef struct u_pipe_t {
+    char text[MAX_COMMAND];
+
+} u_pipe_t;
+
 typedef struct config_t {
     int time;
     int distance;
