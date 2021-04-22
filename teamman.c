@@ -46,7 +46,7 @@ void team_manager_worker(int teamID) {
         pthread_mutex_lock(&tc_mutex);
 
         while (awaitingCars == 0 && shmem->status == ON)
-            pthread_cond_wait(&in_box, &tc_mutex);
+            pthread_cond_wait(&in_box, &tc_mutex); // @TODO consider timed_wait, might be stuck forever
         
         // check again because this iteration might be outdated because cond_wait blocked
         if (shmem->status == OFF) break;
