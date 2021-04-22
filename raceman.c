@@ -46,9 +46,6 @@ int check_team(char team[MAX_TEAM_NAME]) {      // search for team, add it in ca
     return -1;
 }
 
-int check_cars_nums() {
-    return 10;
-}
 
 int add_car(char team[MAX_TEAM_NAME], int carNum, int speed, float consumption, int reliability){
 
