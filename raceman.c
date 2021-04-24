@@ -21,14 +21,15 @@
 
 #include "include.h"
 
-#define PIPES_SIZE 10 + 1
-
+// globals 
 int pCommandsRead;
 int nTeams = 0;
 int nPipes = 0;
+int totalCars = 0;
+int finishedCars = 0;
 
 fd_set read_set;
-int *pipes;       // change to config.nTeams
+int *pipes;
 int fdmax = 0;
 
 
@@ -71,6 +72,7 @@ int add_car(char team[MAX_TEAM_NAME], int carNum, int speed, float consumption, 
 		    cars[ind].status = RUNNING;
 
             teams[teamID].nCars++;
+            totalCars++;
         } else {
             plog("CAN'T ADD MORE CARS TO THIS TEAM");
             return -1;
@@ -213,6 +215,25 @@ void sigusr1(int signum) {
     // stats();
 }
 
+void end_race() {
+
+    // print stats
+
+    // print who won
+
+    // cleanup
+    for (int i = 0; i <= nTeams; i++)
+        close(pipes[i]);
+    unlink(pipes[0]);
+
+    // wait for all children
+    printf("BEFORE WAIT\n");
+    for (int i = 0; i < nTeams; i++) wait(NULL);
+    printf("AFTER WAIT\n");
+
+    exit(0);
+}
+
 void race_manager_worker() {
 
     signal(SIGUSR1, sigusr1); // interrupt race!
@@ -220,34 +241,34 @@ void race_manager_worker() {
     
     // @TODO we need to close file descriptor pCommandsRead
 
-    // opne PIPE_COMMANDS as read only
+    // open PIPE_COMMANDS as read only
     if ((pCommandsRead = open(PIPE_COMMANDS, O_RDONLY)) < 0) {
         printf("ERROR opening pipe %s for writting CODE [%d]\n", PIPE_COMMANDS, errno);
         exit(1);
     }
 
-    command_t cmd;
-
-    char logString[MAX_COMMAND];
-
-    int pipe_commands[1];
+    // vars
+    command_t cmd; 
+    int pipe_commands[1]; 
     pipe_commands[0] = pCommandsRead;
 
-    fdmax = pipe_commands[0];
-
-    pipes = pipe_commands;
+    fdmax = pipe_commands[0]; // max file descriptor (it is always updated)
+    pipes = pipe_commands; // update pointer
     nPipes = 1;
 
+    // each iteration --> one set check
     while(1) {
-        printf("nPipes: %d | nTeams: %d\n", nPipes, nTeams);
 
+        // reset set        
         FD_ZERO(&read_set);
         for (int i = 0; i < nPipes; i++) {
             FD_SET(pipes[i], &read_set);
         }
 
+        // select the updated pipes, blocking until one comes
         if (select(fdmax + 1, &read_set, NULL, NULL, NULL) > 0 ) {
             
+            // named pipe is triggered
             if(FD_ISSET(pipes[0], &read_set)) {
                 read(pipes[0], &cmd, sizeof(command_t));
                 printf("Received: %s", cmd.command);
@@ -255,25 +276,23 @@ void race_manager_worker() {
                
             }
 
-            // this only runs after start race because of nPipes
+            // this only runs after start race because of nPipes | unnamed pipes triggered
             for (int i = 1; i < nPipes + 1; i++) { 
                 if(FD_ISSET(pipes[i], &read_set)) {
                     printf("Team pipes: %d\n", i);
                     read(pipes[i], &cmd, sizeof(cmd));
                     printf("Received: Car ID %d\n", cmd.carID);
 
-                    if(cmd.carStatus == SAFETY) {
-                        sprintf(logString, "CAR %d ENTERED IN SAFETY MODE", cmd.carID);
-                        plog(logString);
-                    }
+                    if(cmd.carStatus == FINISHED)
+                        finishedCars++;
                 }
             }
+
+            // if all cars finished, end race
+            if (finishedCars == totalCars)
+                end_race();
         }
-
-
     }
-    
 
-    for (int i = 0; i < nTeams; i++) wait(NULL);
-    
+    exit(1);
 }
