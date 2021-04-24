@@ -15,13 +15,17 @@
 
 #include "include.h"
 
-void finish() {
+void finish(int my_index) {
 	
 	// minus one car 
 	runningCars--;
 	
 	// [Unnamed Pipe] signal raceman: this car finished
-	
+	command_t send;
+	send.carID = my_index;
+	send.carStatus = FINISHED;
+	write(channel[1], &send, sizeof(command_t));
+	close(channel[1]);
 	
 	// if last car, unblock team-manager (it is stuck on while loop)
 	if (runningCars == 0)
@@ -33,17 +37,6 @@ void finish() {
 void *car_worker(void *car_index) {
     int my_index = *((int*) car_index);
 	int team_index = my_index / config.nCars;
-
-	/*// <<< DEBUG - this must be set when ADD CAR is received >>>
-		cars[my_index].carNum = my_index;
-		cars[my_index].speed = 20;
-		cars[my_index].consumption = 3;
-		cars[my_index].reliability = 0.90;
-		cars[my_index].fuel = config.fuelTank;
-		cars[my_index].pos = 0;
-		cars[my_index].laps = 0;
-		cars[my_index].status = RUNNING;
-	// <<< DEBUG >>> */
 
 	// minimum fuel for 1, 2 or 4 laps
 	float fuel1 = cars[my_index].consumption * config.distance / cars[my_index].speed;
@@ -76,7 +69,7 @@ void *car_worker(void *car_index) {
 			if (cars[my_index].laps >= config.nTurns) {
 				cars[my_index].status = FINISHED;
 				printf("[%d] finished\n", my_index);
-				finish();
+				finish(my_index);
 			}
 			
 			// if this car is trying to get into box
@@ -114,7 +107,7 @@ void *car_worker(void *car_index) {
 		
 			// if race was interrupted -> finish this car because he crossed lap
 			if (shmem->status == OFF)
-				finish();
+				finish(my_index);
 		}
 
 		// check fuel
@@ -123,13 +116,6 @@ void *car_worker(void *car_index) {
 			printf("[%d] try box\n", my_index);
 			tryBox = 1;
 			
-			command_t send;
-
-			send.carID = my_index;
-			sprintf(send.command, "Try box!");
-
-			write(channel[1], &send, sizeof(command_t));
-
 		} else if (cars[my_index].fuel >= fuel2 && cars[my_index].fuel < fuel2+fuel1 && cars[my_index].status != SAFETY) {
 			// fuel for only 2 laps -> SAFETY MODE
 			cars[my_index].status = SAFETY;
@@ -140,14 +126,12 @@ void *car_worker(void *car_index) {
 			// NO FUEL 
 			cars[my_index].status = NO_FUEL;
 			printf("[%d] no fuel\n", my_index);
-			finish();
+			finish(my_index);
 		}
-
-		
 
 		printf("[%d] m = %d  |  lap = %d  | fuel = %f\n", my_index, cars[my_index].pos, cars[my_index].laps, cars[my_index].fuel);
 		usleep(1 * 1000 * 1000 * config.multiplier); // sleep 1 TIME UNIT
 	}
     
-    finish();
+    finish(my_index);
 }
