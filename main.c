@@ -150,7 +150,7 @@ int main(int argc, char **argv) {
     while(1) {
         fgets(cmdSend, MAX_COMMAND, stdin);     // reads the command and removes \n
         
-        command cmd;                            // sends the command
+        command_t cmd;                            // sends the command
         strcpy(cmd.command, cmdSend);
         write(pCommandsWrite, &cmd, sizeof(cmd));
     }

@@ -179,18 +179,16 @@ void check_input(char command[MAX_COMMAND]){
         } else if (countWords == 2 && strcmp(address[0], "START") == 0 && strcmp(address[1], "RACE") == 0) {
             if (nTeams >= 3) {
                 sprintf(reply, "NEW COMMAND RECEIVED: %s", command);
-                plog(reply);
 
                 start_race();                // TODO: function and verify current status
 
             } else if (nTeams < 3){             // check numbers of teams, at least 3 
                 sprintf(reply, "CANNOT START, NOT ENOUGH TEAMS");
-                plog(reply);
 
             } else {
                 sprintf(reply, "COMMAND NOT ALLOWED, RACE ALREADY STARTED: %s", command);
-                plog(reply);
             }
+            plog(reply);
 
         } else if (strcmp(command, "pSHMEM") == 0) {                // print shmem, remove for final version
             printf("!%d!\n", shmem->status);
@@ -230,6 +228,8 @@ void race_manager_worker() {
 
     command_t cmd;
 
+    char logString[MAX_COMMAND];
+
     int pipe_commands[1];
     pipe_commands[0] = pCommandsRead;
 
@@ -261,6 +261,11 @@ void race_manager_worker() {
                     printf("Team pipes: %d\n", i);
                     read(pipes[i], &cmd, sizeof(cmd));
                     printf("Received: Car ID %d\n", cmd.carID);
+
+                    if(cmd.carStatus == SAFETY) {
+                        sprintf(logString, "CAR %d ENTERED IN SAFETY MODE", cmd.carID);
+                        plog(logString);
+                    }
                 }
             }
         }

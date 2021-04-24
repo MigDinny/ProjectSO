@@ -48,7 +48,6 @@ void plog(char line[MAX_SIZE]) {
 
     char timestr[200];
     time_t timer;
-    struct tm* tm_info;
 
     sem_wait(logMutex);     // wait to write on file
     
