@@ -25,7 +25,7 @@ void finish(int my_index) {
 	send.carID = my_index;
 	send.carStatus = FINISHED;
 	write(channel[1], &send, sizeof(command_t));
-	close(channel[1]);
+	//close(channel[1]);
 	
 	// if last car, unblock team-manager (it is stuck on while loop)
 	if (runningCars == 0)
