@@ -16,6 +16,24 @@
 
 #include "include.h"
 
+void terminate() {
+
+	// wait for all threads to finish (eventually) (join returns immediately if already exited)
+    for (int i = 0; i < teams[teamID].nCars; i++) { 
+        pthread_join(carThreadIds[i], NULL);
+    }
+
+
+	// cleanup
+	pthread_mutex_destroy(&tc_mutex);
+	pthread_cond_destroy(&in_box);
+	pthread_cond_destroy(&out_box);
+	
+
+    exit(0); // returning to racemanager
+	
+}
+
 void team_manager_worker(int teamID) {
 
     // <<< DEBUG >>>
@@ -32,6 +50,7 @@ void team_manager_worker(int teamID) {
     awaitingCars = 0;
     awaitingSafetyCars = 0;
     teams[teamID].status = FREE;
+	runningCars = teams[teamID].nCars;
 
     sprintf(teams[teamID].teamName, "%s%d", "team", teamID);
 
@@ -73,10 +92,6 @@ void team_manager_worker(int teamID) {
 
     }
 
-    // wait for all threads 
-    for (int i = 0; i < teams[teamID].nCars; i++) { 
-        pthread_join(carThreadIds[i], NULL);
-    }
+	terminate();
 
-    exit(0);
 }

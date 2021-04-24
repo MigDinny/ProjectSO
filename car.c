@@ -15,6 +15,21 @@
 
 #include "include.h"
 
+void finish() {
+	
+	// minus one car 
+	runningCars--;
+	
+	// [Unnamed Pipe] signal raceman: this car finished
+	
+	
+	// if last car, unblock team-manager (it is stuck on while loop)
+	if (runningCars == 0)
+		pthread_cond_signal(&in_box);
+	
+	pthread_exit(NULL);
+	return NULL;
+}
 
 void *car_worker(void *car_index) {
     int my_index = *((int*) car_index);
@@ -42,8 +57,7 @@ void *car_worker(void *car_index) {
 	// each iteration is a TIME UNIT
 	while(1) {
 
-
-		// proccess a time unit
+		// proccess a time unit -> update positions
 		if (cars[my_index].status == SAFETY) {
 			cars[my_index].pos += 0.3*cars[my_index].speed;
 			cars[my_index].fuel -= 0.4*cars[my_index].consumption;
@@ -55,28 +69,28 @@ void *car_worker(void *car_index) {
 
 		// new lap
 		if (cars[my_index].pos >= config.distance) {
+			// update vars
 			cars[my_index].pos -= config.distance;
 			cars[my_index].laps++;
-
+			
+			// if finished race
 			if (cars[my_index].laps >= config.nTurns) {
-				// finished race
 				cars[my_index].status = FINISHED;
 				printf("[%d] finished\n", my_index);
-				pthread_exit(NULL);
-				// @TODO some trigger here
+				finish();
 			}
-
+			
+			// if this car is trying to get into box
 			if (tryBox == 1) {
 				// we are in box, acquire lock 
-
-
 				pthread_mutex_lock(&tc_mutex);
 
 				// check if box is empty
 				if ( (teams[team_index].status == FREE) || (teams[team_index].status == RESERVED && cars[my_index].status == SAFETY) ) {
 					// change these variables so the condition breaks on the other side and it stops looping on cond_wait()
 					awaitingCars++;
-					if (cars[my_index].status == SAFETY) awaitingSafetyCars++;
+					if (cars[my_index].status == SAFETY)
+						awaitingSafetyCars++;
 
 					boxCarIndex = my_index;
 
@@ -90,13 +104,18 @@ void *car_worker(void *car_index) {
 					// left box
 					tryBox = 0;
 					awaitingCars--;
-					if (cars[my_index].status == SAFETY) awaitingSafetyCars--;
+					if (cars[my_index].status == SAFETY)
+						awaitingSafetyCars--;
 
 					cars[my_index].status = RUNNING;
 				}
 
 				pthread_mutex_unlock(&tc_mutex);
 			}
+		
+			// if race was interrupted -> finish this car because he crossed lap
+			if (shmem->status == OFF)
+				finish();
 		}
 
 		// check fuel
@@ -114,10 +133,8 @@ void *car_worker(void *car_index) {
 		} else if (cars[my_index].fuel <= 0) {
 			// NO FUEL 
 			cars[my_index].status = NO_FUEL;
-			
 			printf("[%d] no fuel\n", my_index);
-			// @TODO some trigger here
-			pthread_exit(NULL);
+			finish();
 		}
 
 		
@@ -126,8 +143,5 @@ void *car_worker(void *car_index) {
 		usleep(1 * 1000 * 1000 * config.multiplier); // sleep 1 TIME UNIT
 	}
     
-    
-	
-    pthread_exit(NULL);
-    return NULL;
+    finish();
 }

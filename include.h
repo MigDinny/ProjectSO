@@ -134,6 +134,7 @@ void race_manager_worker();
 void team_manager_worker(int);
 int awaitingCars;
 int awaitingSafetyCars;
+int runningCars;
 int boxCarIndex;
 pthread_mutex_t tc_mutex;
 pthread_cond_t in_box;
