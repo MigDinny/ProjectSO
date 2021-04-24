@@ -75,9 +75,11 @@ typedef struct shmem_t {
 
 } shmem_t;
 
-typedef struct command{
+typedef struct command_t {
+    int carID;
+    enum CAR_STATUS carStatus;
     char command[MAX_COMMAND];
-} command;
+} command_t;
 
 
 // GLOBALS
@@ -114,6 +116,8 @@ int load_config(char*);
 
 // RACE MANAGER
 
+int channel[2];     // unnamed pipe between raceman and teamman | 0 -> reading | 1 -> writing
+
 int add_car(char [MAX_TEAM_NAME], int, int, float, int);
 
 int check_team(char [MAX_TEAM_NAME]);
@@ -140,9 +144,10 @@ pthread_mutex_t tc_mutex;
 pthread_cond_t in_box;
 pthread_cond_t out_box;
 
-// CAR MANAGER
+// CAR THREAD
 
 void *car_worker(void *);
+
 
 // BREAKDOWN MANAGER
 

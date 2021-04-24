@@ -21,8 +21,15 @@
 
 #include "include.h"
 
+#define PIPES_SIZE 10 + 1
+
 int pCommandsRead;
 int nTeams = 0;
+int nPipes = 0;
+
+fd_set read_set;
+int *pipes;       // change to config.nTeams
+int fdmax = 0;
 
 
 void add_teams(char team[MAX_TEAM_NAME]) {      // create new team
@@ -45,7 +52,6 @@ int check_team(char team[MAX_TEAM_NAME]) {      // search for team, add it in ca
     }
     return -1;
 }
-
 
 int add_car(char team[MAX_TEAM_NAME], int carNum, int speed, float consumption, int reliability){
 
@@ -82,14 +88,30 @@ void start_race(){
     
     int id[nTeams];
 
+    int pipes_temp[nTeams + 1];
+
     for (int i = 0; i < nTeams; i++) {
         id[i] = i;
 
+        pipe(channel);
+
         if(fork() == 0){
+            close(channel[0]);
             team_manager_worker(id[i]);
             exit(0);
         }
+
+        close(channel[1]);
+        pipes_temp[i + 1] = channel[0];
+    
+        if (fdmax < pipes_temp[i + 1]) 
+            fdmax = pipes_temp[i + 1];
     }
+
+    nPipes = nTeams + 1;
+
+    pipes_temp[0] = pipes[0];
+    pipes = pipes_temp;
 }
 
 void remove_commas(char* str) {
@@ -106,7 +128,13 @@ void check_input(char command[MAX_COMMAND]){
     char copy[MAX_COMMAND];
     char *address[MAX_COMMAND];
     char reply[MAX_COMMAND];
-        
+    
+    if(shmem->status == ON) {
+        sprintf(reply, "COMMAND NOT ALLOWED, RACE ALREADY STARTED: %s", command);
+        plog(reply);
+        return;
+    }
+
     if (strlen(command) > 1) {
         command[strcspn(command, "\n")] = 0;
     
@@ -126,7 +154,7 @@ void check_input(char command[MAX_COMMAND]){
             remove_commas(address[i]);
         }
 
-        if (shmem->status == OFF && countWords == 11 && strcmp(address[0], "ADDCAR") == 0 && strcmp(address[1], "TEAM:") == 0 && 
+        if (countWords == 11 && strcmp(address[0], "ADDCAR") == 0 && strcmp(address[1], "TEAM:") == 0 && 
                         strcmp(address[3], "CAR:") == 0 && strcmp(address[5], "SPEED:") == 0 && 
                         strcmp(address[7], "CONSUMPTION:") == 0 && strcmp(address[9], "RELIABILITY:") == 0 ) {
 
@@ -148,7 +176,7 @@ void check_input(char command[MAX_COMMAND]){
                 plog(reply);
             }
 
-        } else if (shmem->status == OFF && countWords == 2 && strcmp(address[0], "START") == 0 && strcmp(address[1], "RACE") == 0) {
+        } else if (countWords == 2 && strcmp(address[0], "START") == 0 && strcmp(address[1], "RACE") == 0) {
             if (nTeams >= 3) {
                 sprintf(reply, "NEW COMMAND RECEIVED: %s", command);
                 plog(reply);
@@ -172,17 +200,13 @@ void check_input(char command[MAX_COMMAND]){
                 }
             }
 
-        } else if (shmem->status == OFF) {
+        } else {
             sprintf(reply, "WRONG COMMAND => %s", command);
             plog(reply);
 
-        } else {
-            sprintf(reply, "COMMAND NOT ALLOWED, RACE ALREADY STARTED: %s", command);
-            plog(reply);
-        }
+        } 
     }
 }
-
 
 void sigusr1(int signum) {
 
@@ -204,11 +228,44 @@ void race_manager_worker() {
         exit(1);
     }
 
-    command cmd;
-    while (1) {
-        read(pCommandsRead, &cmd, sizeof(command));
-        //printf("Received: %s", cmd.command);
-        check_input(cmd.command);
+    command_t cmd;
+
+    int pipe_commands[1];
+    pipe_commands[0] = pCommandsRead;
+
+    fdmax = pipe_commands[0];
+
+    pipes = pipe_commands;
+    nPipes = 1;
+
+    while(1) {
+        printf("nPipes: %d | nTeams: %d\n", nPipes, nTeams);
+
+        FD_ZERO(&read_set);
+        for (int i = 0; i < nPipes; i++) {
+            FD_SET(pipes[i], &read_set);
+        }
+
+        if (select(fdmax + 1, &read_set, NULL, NULL, NULL) > 0 ) {
+            
+            if(FD_ISSET(pipes[0], &read_set)) {
+                read(pipes[0], &cmd, sizeof(command_t));
+                printf("Received: %s", cmd.command);
+                check_input(cmd.command);
+               
+            }
+
+            // this only runs after start race because of nPipes
+            for (int i = 1; i < nPipes + 1; i++) { 
+                if(FD_ISSET(pipes[i], &read_set)) {
+                    printf("Team pipes: %d\n", i);
+                    read(pipes[i], &cmd, sizeof(cmd));
+                    printf("Received: Car ID %d\n", cmd.carID);
+                }
+            }
+        }
+
+
     }
     
 

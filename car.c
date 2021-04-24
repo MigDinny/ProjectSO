@@ -28,7 +28,6 @@ void finish() {
 		pthread_cond_signal(&in_box);
 	
 	pthread_exit(NULL);
-	return NULL;
 }
 
 void *car_worker(void *car_index) {
@@ -123,6 +122,13 @@ void *car_worker(void *car_index) {
 			// fuel for only 4 laps -> TRY TO GET INTO BOX
 			printf("[%d] try box\n", my_index);
 			tryBox = 1;
+			
+			command_t send;
+
+			send.carID = my_index;
+			sprintf(send.command, "Try box!");
+
+			write(channel[1], &send, sizeof(command_t));
 
 		} else if (cars[my_index].fuel >= fuel2 && cars[my_index].fuel < fuel2+fuel1 && cars[my_index].status != SAFETY) {
 			// fuel for only 2 laps -> SAFETY MODE

@@ -16,7 +16,7 @@
 
 #include "include.h"
 
-void terminate() {
+void terminate_teamman(int teamID, pthread_t carThreadIds[]) {
 
 	// wait for all threads to finish (eventually) (join returns immediately if already exited)
     for (int i = 0; i < teams[teamID].nCars; i++) { 
@@ -92,6 +92,6 @@ void team_manager_worker(int teamID) {
 
     }
 
-	terminate();
+	terminate_teamman(teamID, carThreadIds);
 
 }
