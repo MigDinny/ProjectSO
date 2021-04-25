@@ -59,8 +59,7 @@ void terminate_teamman(int teamID, pthread_t carThreadIds[]) {
 
 void team_manager_worker(int teamID) {
 
-    // <<< DEBUG >>>
-    signal(SIGINT, SIG_DFL);
+    signal(SIGUSR1, SIG_IGN);
 
     // init mutexes and conds
     pthread_mutex_init(&tc_mutex, NULL);

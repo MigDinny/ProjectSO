@@ -28,14 +28,27 @@
 #include "include.h"
 
 
-void terminate() {
-    plog("SIMULATOR CLOSING");    
+void terminate(int k) {
+    //stats();
+    // print who won if exists
 
+
+    plog("SIMULATOR CLOSING");
+
+    if (k == 1)
+        kill(rmpid, SIGKILL);
+
+    // waits for RM >> kills bm >> waits for bm
+    waitpid(rmpid, NULL, 0);
+    kill(bmpid, SIGKILL);
+    waitpid(bmpid, NULL, 0);
+
+    // cleanup crew!
     close(pCommandsWrite);
     unlink(PIPE_COMMANDS);
-
     close_log();
     clean_all_shared(shmem, shmid);
+    
     exit(0);
 }
 
@@ -43,15 +56,19 @@ void sigint(int signum) {
 
     printf(" SIGINT detected\n");
 
-    //stats();
+    if (shmem->status == OFF)
+        terminate(1);
+    else
+        shmem->status = OFF;
 
-    terminate();
+    terminate(0);
 }
 
 void sigtstp(int signum) {
     
     signal(SIGTSTP, sigtstp);
     shmem->status = OFF;
+    
 
     printf(" SIGTSTP detected\n");
 
@@ -60,13 +77,12 @@ void sigtstp(int signum) {
 
 // the program ended normally, received this signal by raceman
 void sigterm(int signum) {
+    terminate(0);
+}
 
-    kill(bmpid, SIGKILL);
-
-    waitpid(bmpid, NULL, 0);
-    waitpid(rmpid, NULL, 0);
-
-    terminate();
+// redirect signal to racemanager
+void sigusr1_main(int signum) {
+    kill(rmpid, SIGUSR1);
 }
 
 /*
@@ -137,6 +153,7 @@ int main(int argc, char **argv) {
     signal(SIGINT, sigint); // CTRL C
     signal(SIGTSTP, sigtstp); // CTRL Z
     signal(SIGTERM, sigterm); // SIGTERM BY raceman
+    signal(SIGUSR1, sigusr1_main); // redirect sigusr1 to raceman
 
     // init named PIPE between main and race manager
     

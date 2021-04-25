@@ -27,13 +27,14 @@ int nTeams = 0;
 int nPipes = 0;
 int totalCars = 0;
 int finishedCars = 0;
-
+int notSIGUSR1 = 1;
 int *processIDs;
 
 fd_set read_set;
 int *pipes;
 int fdmax = 0;
 
+int test = 0;
 
 void add_teams(char team[MAX_TEAM_NAME]) {      // create new team
     strcpy(teams[nTeams].teamName, team);
@@ -219,6 +220,9 @@ void sigusr1(int signum) {
 
     plog("SIGUSR1 received, race interrupted!");
 
+    shmem->status = OFF;
+    notSIGUSR1 = 0;
+    test = 1;
     // stats();
 }
 
@@ -226,24 +230,41 @@ void end_race() {
 
     shmem->status = OFF;
 
-    // print stats
+        printf("HERE1\n");
 
-    // print who won
 
     // cleanup
-    for (int i = 0; i <= nTeams; i++)
+    for (int i = 1; i <= nTeams; i++)
         close(pipes[i]);
-    unlink(PIPE_COMMANDS);
 
     // kill child processes
     for (int u = 0; u < nTeams; u++){
         kill(processIDs[u], SIGTERM);
+        printf("KILLED %d\n", processIDs[u]);
     }
 
     // wait for all children
-    printf("BEFORE WAIT\n");
     for (int i = 0; i < nTeams; i++) wait(NULL);
-    printf("AFTER WAIT\n");
+
+    printf("HERE2\n");
+
+    // reset pipes stuff to allow another race
+    nPipes = 1;
+    fdmax = pCommandsRead;
+    int pipes_temp[1];
+    pipes_temp[0] = pCommandsRead;
+
+    pipes = pipes_temp; 
+
+    // dont proceed if sigusr1 was caught
+    if (!notSIGUSR1) {
+        notSIGUSR1 = 1;
+        return;
+    }
+
+    unlink(PIPE_COMMANDS);
+
+    close(pCommandsRead);
 
     kill(getppid(), SIGTERM);
 
@@ -253,7 +274,6 @@ void end_race() {
 void race_manager_worker() {
 
     signal(SIGUSR1, sigusr1); // interrupt race!
-    signal(SIGINT, SIG_DFL);
     
     // @TODO we need to close file descriptor pCommandsRead
 
@@ -284,15 +304,21 @@ void race_manager_worker() {
         // select the updated pipes, blocking until one comes
         if (select(fdmax + 1, &read_set, NULL, NULL, NULL) > 0 ) {
             
+            if (test == 1) {
+                test = 0;
+                continue;
+            }
+
             // named pipe is triggered
             if(FD_ISSET(pipes[0], &read_set)) {
+                printf("RECEIVED COMMAND ");
                 read(pipes[0], &cmd, sizeof(command_t));
                 check_input(cmd.command);
-               
+                cmd.command[0] = '\0';
             }
 
             // this only runs after start race because of nPipes | unnamed pipes triggered
-            for (int i = 1; i < nPipes + 1; i++) { 
+            for (int i = 1; i < nPipes; i++) { 
                 if(FD_ISSET(pipes[i], &read_set)) {
                     printf("Team pipes: %d\n", i);
                     read(pipes[i], &cmd, sizeof(cmd));
@@ -302,13 +328,16 @@ void race_manager_worker() {
                         finishedCars++;
                     
                     cmd.carStatus = RUNNING;    // to avoid multiple checks above
-                    printf("%d - %d\n", finishedCars, totalCars);
+                    printf("%d - %d - %d\n", finishedCars, totalCars, nPipes);
                 }
             }
 
+            printf("finished = %d total = %d npipes = %d \n", finishedCars, totalCars, nPipes);
+
             // if all cars finished, end race
-            if (finishedCars == totalCars && shmem->status == ON)
+            if (finishedCars == totalCars && totalCars != 0)
                 end_race();
+
         }
     }
 
