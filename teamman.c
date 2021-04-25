@@ -13,6 +13,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "include.h"
 
@@ -96,6 +97,7 @@ void team_manager_worker(int teamID) {
         teams[teamID].status = BUSY;
 
         cars[boxCarIndex].fuel = config.fuelTank;
+        teams[teamID].countRefuels++;
         
         pthread_mutex_unlock(&tc_mutex);
 
