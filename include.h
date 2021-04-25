@@ -12,6 +12,8 @@
 
 // MAIN
 #define PIPE_COMMANDS "/home/user/Desktop/np_main_raceman"
+int bmpid;
+int rmpid;
 
 // RACEMAN
 #define MAX_COMMAND 200

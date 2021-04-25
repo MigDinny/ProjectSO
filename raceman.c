@@ -245,6 +245,8 @@ void end_race() {
     for (int i = 0; i < nTeams; i++) wait(NULL);
     printf("AFTER WAIT\n");
 
+    kill(getppid(), SIGTERM);
+
     exit(0);
 }
 
@@ -305,7 +307,7 @@ void race_manager_worker() {
             }
 
             // if all cars finished, end race
-            if (finishedCars == totalCars)
+            if (finishedCars == totalCars && shmem->status == ON)
                 end_race();
         }
     }
