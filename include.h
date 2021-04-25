@@ -14,6 +14,7 @@
 #define PIPE_COMMANDS "/home/user/Desktop/np_main_raceman"
 int bmpid;
 int rmpid;
+int gotSignal;
 
 // RACEMAN
 #define MAX_COMMAND 200
@@ -72,9 +73,8 @@ typedef struct team_t {
 } team_t;
 
 typedef struct shmem_t {
-
     enum RACE_STATUS status;
-
+    int notSIGUSR1;
 } shmem_t;
 
 typedef struct command_t {

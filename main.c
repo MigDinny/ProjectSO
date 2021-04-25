@@ -32,7 +32,6 @@ void terminate(int k) {
     //stats();
     // print who won if exists
 
-
     plog("SIMULATOR CLOSING");
 
     if (k == 1)
@@ -65,13 +64,9 @@ void sigint(int signum) {
 }
 
 void sigtstp(int signum) {
-    
     signal(SIGTSTP, sigtstp);
-    shmem->status = OFF;
     
-
-    printf(" SIGTSTP detected\n");
-
+    plog("SIGTSTP detected!");
     // stats();
 }
 
@@ -82,7 +77,11 @@ void sigterm(int signum) {
 
 // redirect signal to racemanager
 void sigusr1_main(int signum) {
-    kill(rmpid, SIGUSR1);
+    plog("SIGUSR1 detected!");
+
+    shmem->status = OFF;
+    shmem->notSIGUSR1 = 0;
+    gotSignal = 1;
 }
 
 /*
@@ -98,10 +97,11 @@ void sigusr1_main(int signum) {
 int main(int argc, char **argv) {
 
     // We need to ignore all signals first so the child processes inherit SIG_IGN.
-    signal(SIGTSTP, SIG_IGN); // prevent this process to be suspended!
-    signal(SIGUSR1, SIG_IGN); // prevent this process to die!
-    signal(SIGINT, SIG_IGN); // prevent this process to die!
+    signal(SIGTSTP, SIG_IGN); // prevent this process from being suspended!
+    signal(SIGUSR1, SIG_IGN); // prevent this process from dying!
+    signal(SIGINT, SIG_IGN); // prevent this process from dying!
 
+    gotSignal = 0;
     int status = 0; // status codes for commands
     init_log();
 
@@ -173,7 +173,6 @@ int main(int argc, char **argv) {
     char cmdSend[MAX_COMMAND];
     while(1) {
         fgets(cmdSend, MAX_COMMAND, stdin);     // reads the command and removes \n
-        
         command_t cmd;                            // sends the command
         strcpy(cmd.command, cmdSend);
         write(pCommandsWrite, &cmd, sizeof(cmd));
