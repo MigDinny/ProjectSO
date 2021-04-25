@@ -29,12 +29,7 @@
 
 
 void terminate() {
-    plog("SIMULATOR CLOSING");
-
-    
-    /*for (int i2 = 0; i2 < config.nTeams; i2++)
-        printf("cars[%d] = %s\n", i2, teams[i2].teamName);*/
-    
+    plog("SIMULATOR CLOSING");    
 
     close(pCommandsWrite);
     unlink(PIPE_COMMANDS);
@@ -61,6 +56,17 @@ void sigtstp(int signum) {
     printf(" SIGTSTP detected\n");
 
     // stats();
+}
+
+// the program ended normally, received this signal by raceman
+void sigterm(int signum) {
+
+    kill(bmpid, SIGKILL);
+
+    waitpid(bmpid, NULL, 0);
+    waitpid(rmpid, NULL, 0);
+
+    terminate();
 }
 
 /*
@@ -113,7 +119,7 @@ int main(int argc, char **argv) {
     plog("SIMULATOR STARTING");
 
     // create RACE MANAGER proccess
-    if (fork() == 0) {
+    if ((rmpid = fork()) == 0) {
         // inside child, call worker
         race_manager_worker(shmem);
         exit(0);
@@ -121,7 +127,7 @@ int main(int argc, char **argv) {
 
 
     // create BREAKDOWN MANAGER proccess
-    if (fork() == 0) {
+    if ((bmpid = fork()) == 0) {
         // inside child, call worker
         breakdown_manager_worker(shmem);
         exit(0);
@@ -130,6 +136,7 @@ int main(int argc, char **argv) {
     // initializing the SIGNAL redirections
     signal(SIGINT, sigint); // CTRL C
     signal(SIGTSTP, sigtstp); // CTRL Z
+    signal(SIGTERM, sigterm); // SIGTERM BY raceman
 
     // init named PIPE between main and race manager
     
@@ -150,7 +157,7 @@ int main(int argc, char **argv) {
     while(1) {
         fgets(cmdSend, MAX_COMMAND, stdin);     // reads the command and removes \n
         
-        command cmd;                            // sends the command
+        command_t cmd;                            // sends the command
         strcpy(cmd.command, cmdSend);
         write(pCommandsWrite, &cmd, sizeof(cmd));
     }

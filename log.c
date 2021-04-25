@@ -44,19 +44,19 @@ void close_log() {
 }
 
 void plog(char line[MAX_SIZE]) {
+    
 
-    char timestr[10];
+    char timestr[200];
     time_t timer;
-    struct tm* tm_info;
 
     sem_wait(logMutex);     // wait to write on file
     
     timer = time(NULL);
-    tm_info = localtime(&timer);
-    strftime(timestr, 10, "%H:%M:%S ", tm_info);
+    strcpy(timestr, ctime(&timer));
+    
+    printf("%.*s: %s\n", 8, timestr + 11, line);
 
-    printf("%s%s\n", timestr, line);
-    fprintf(logfile, "%s%s\n", timestr, line);
+    fprintf(logfile, "%.*s: %s\n", 8, timestr + 11, line);
     fflush(logfile);
 
     sem_post(logMutex);     // free mutex for next writer

@@ -16,21 +16,44 @@
 
 #include "include.h"
 
-void terminate() {
+static void hdl (int sig, siginfo_t *siginfo, void *context)
+{
+	close(channel[1]);
+    exit(0);
+}
+
+
+void terminate_teamman(int teamID, pthread_t carThreadIds[]) {
 
 	// wait for all threads to finish (eventually) (join returns immediately if already exited)
     for (int i = 0; i < teams[teamID].nCars; i++) { 
+        printf("WAITING CAR %d\n", i);
         pthread_join(carThreadIds[i], NULL);
     }
 
 
 	// cleanup
+    //close(channel[1]);
 	pthread_mutex_destroy(&tc_mutex);
 	pthread_cond_destroy(&in_box);
 	pthread_cond_destroy(&out_box);
 	
+    printf("exit\n");
 
-    exit(0); // returning to racemanager
+
+    struct sigaction act;
+ 
+	memset (&act, '\0', sizeof(act));
+ 
+	/* Use the sa_sigaction field because the handles has two additional parameters */
+	act.sa_sigaction = &hdl;
+ 
+	/* The SA_SIGINFO flag tells sigaction() to use the sa_sigaction field, not sa_handler. */
+	act.sa_flags = SA_SIGINFO;
+ 
+	sigaction(SIGTERM, &act, NULL);
+
+    pause(); // wait for signal
 	
 }
 
@@ -60,14 +83,14 @@ void team_manager_worker(int teamID) {
     }
 
     // loop to manage box
-    while (shmem->status == ON) {
+    while (1) {
         pthread_mutex_lock(&tc_mutex);
 
-        while (awaitingCars == 0 && shmem->status == ON)
+        while (awaitingCars == 0 && runningCars > 0)
             pthread_cond_wait(&in_box, &tc_mutex); // @TODO consider timed_wait, might be stuck forever
         
         // check again because this iteration might be outdated because cond_wait blocked
-        if (shmem->status == OFF) break;
+        if (runningCars == 0) break;
 
         printf("aC = %d  car = %d  \n",awaitingCars, boxCarIndex);
         teams[teamID].status = BUSY;
@@ -92,6 +115,6 @@ void team_manager_worker(int teamID) {
 
     }
 
-	terminate();
+	terminate_teamman(teamID, carThreadIds);
 
 }
