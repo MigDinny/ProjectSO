@@ -13,6 +13,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "include.h"
 
@@ -27,7 +28,6 @@ void terminate_teamman(int teamID, pthread_t carThreadIds[]) {
 
 	// wait for all threads to finish (eventually) (join returns immediately if already exited)
     for (int i = 0; i < teams[teamID].nCars; i++) { 
-        printf("WAITING CAR %d\n", i);
         pthread_join(carThreadIds[i], NULL);
     }
 
@@ -38,9 +38,6 @@ void terminate_teamman(int teamID, pthread_t carThreadIds[]) {
 	pthread_cond_destroy(&in_box);
 	pthread_cond_destroy(&out_box);
 	
-    printf("exit\n");
-
-
     struct sigaction act;
  
 	memset (&act, '\0', sizeof(act));
@@ -59,8 +56,7 @@ void terminate_teamman(int teamID, pthread_t carThreadIds[]) {
 
 void team_manager_worker(int teamID) {
 
-    // <<< DEBUG >>>
-    signal(SIGINT, SIG_DFL);
+    signal(SIGUSR1, SIG_IGN);
 
     // init mutexes and conds
     pthread_mutex_init(&tc_mutex, NULL);
@@ -74,8 +70,6 @@ void team_manager_worker(int teamID) {
     awaitingSafetyCars = 0;
     teams[teamID].status = FREE;
 	runningCars = teams[teamID].nCars;
-
-    sprintf(teams[teamID].teamName, "%s%d", "team", teamID);
 
     for (int i = 0; i < teams[teamID].nCars; i++) {  
         id[i] = teamID*config.nCars + i;
@@ -92,7 +86,7 @@ void team_manager_worker(int teamID) {
         // check again because this iteration might be outdated because cond_wait blocked
         if (runningCars == 0) break;
 
-        printf("aC = %d  car = %d  \n",awaitingCars, boxCarIndex);
+        //printf("aC = %d  car = %d  \n",awaitingCars, boxCarIndex);
         teams[teamID].status = BUSY;
 
         cars[boxCarIndex].fuel = config.fuelTank;

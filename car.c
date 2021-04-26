@@ -44,7 +44,7 @@ void *car_worker(void *car_index) {
 	float fuel4 = 4 * fuel1;
 	int tryBox = 0; // 0 false 1 true
 
-	printf("%f %f %f\n", fuel1, fuel2, fuel4);
+	//printf("%f %f %f\n", fuel1, fuel2, fuel4);
 	
 	// each iteration is a TIME UNIT
 	while(1) {
@@ -129,7 +129,7 @@ void *car_worker(void *car_index) {
 			finish(my_index);
 		}
 
-		printf("[%d] m = %d  |  lap = %d  | fuel = %f\n", my_index, cars[my_index].pos, cars[my_index].laps, cars[my_index].fuel);
+		//printf("[%d] m = %d  |  lap = %d  | fuel = %f\n", my_index, cars[my_index].pos, cars[my_index].laps, cars[my_index].fuel);
 		usleep(1 * 1000 * 1000 * config.multiplier); // sleep 1 TIME UNIT
 	}
     

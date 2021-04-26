@@ -35,7 +35,7 @@ int init_shared_memory() {
 	// init values
 	
 	shmem->status = OFF;
-	
+	shmem->notSIGUSR1 = 1;
 	teams = (team_t*) (shmem+1);
 	cars = (car_t*) (teams + config.nTeams);
 	

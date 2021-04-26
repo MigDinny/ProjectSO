@@ -28,14 +28,26 @@
 #include "include.h"
 
 
-void terminate() {
-    plog("SIMULATOR CLOSING");    
+void terminate(int k) {
+    //stats();
+    // print who won if exists
 
+    plog("SIMULATOR CLOSING");
+
+    if (k == 1)
+        kill(rmpid, SIGKILL);
+
+    // waits for RM >> kills bm >> waits for bm
+    waitpid(rmpid, NULL, 0);
+    kill(bmpid, SIGKILL);
+    waitpid(bmpid, NULL, 0);
+
+    // cleanup crew!
     close(pCommandsWrite);
     unlink(PIPE_COMMANDS);
-
     close_log();
     clean_all_shared(shmem, shmid);
+    
     exit(0);
 }
 
@@ -43,30 +55,33 @@ void sigint(int signum) {
 
     printf(" SIGINT detected\n");
 
-    //stats();
+    if (shmem->status == OFF)
+        terminate(1);
+    else
+        shmem->status = OFF;
 
-    terminate();
+    terminate(0);
 }
 
 void sigtstp(int signum) {
-    
     signal(SIGTSTP, sigtstp);
-    shmem->status = OFF;
-
-    printf(" SIGTSTP detected\n");
-
+    
+    plog("SIGTSTP detected!");
     // stats();
 }
 
 // the program ended normally, received this signal by raceman
 void sigterm(int signum) {
+    terminate(0);
+}
 
-    kill(bmpid, SIGKILL);
+// redirect signal to racemanager
+void sigusr1_main(int signum) {
+    plog("SIGUSR1 detected!");
 
-    waitpid(bmpid, NULL, 0);
-    waitpid(rmpid, NULL, 0);
-
-    terminate();
+    shmem->status = OFF;
+    shmem->notSIGUSR1 = 0;
+    gotSignal = 1;
 }
 
 /*
@@ -82,10 +97,11 @@ void sigterm(int signum) {
 int main(int argc, char **argv) {
 
     // We need to ignore all signals first so the child processes inherit SIG_IGN.
-    signal(SIGTSTP, SIG_IGN); // prevent this process to be suspended!
-    signal(SIGUSR1, SIG_IGN); // prevent this process to die!
-    signal(SIGINT, SIG_IGN); // prevent this process to die!
+    signal(SIGTSTP, SIG_IGN); // prevent this process from being suspended!
+    signal(SIGUSR1, SIG_IGN); // prevent this process from dying!
+    signal(SIGINT, SIG_IGN); // prevent this process from dying!
 
+    gotSignal = 0;
     int status = 0; // status codes for commands
     init_log();
 
@@ -137,6 +153,7 @@ int main(int argc, char **argv) {
     signal(SIGINT, sigint); // CTRL C
     signal(SIGTSTP, sigtstp); // CTRL Z
     signal(SIGTERM, sigterm); // SIGTERM BY raceman
+    signal(SIGUSR1, sigusr1_main); // redirect sigusr1 to raceman
 
     // init named PIPE between main and race manager
     
@@ -156,7 +173,6 @@ int main(int argc, char **argv) {
     char cmdSend[MAX_COMMAND];
     while(1) {
         fgets(cmdSend, MAX_COMMAND, stdin);     // reads the command and removes \n
-        
         command_t cmd;                            // sends the command
         strcpy(cmd.command, cmdSend);
         write(pCommandsWrite, &cmd, sizeof(cmd));
