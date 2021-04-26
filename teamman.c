@@ -76,8 +76,6 @@ void team_manager_worker(int teamID) {
     teams[teamID].status = FREE;
 	runningCars = teams[teamID].nCars;
 
-    sprintf(teams[teamID].teamName, "%s%d", "team", teamID);
-
     for (int i = 0; i < teams[teamID].nCars; i++) {  
         id[i] = teamID*config.nCars + i;
         pthread_create(&carThreadIds[i], NULL, car_worker, &id[i]);
