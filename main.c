@@ -21,6 +21,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
 
 /*
     Include project libraries
@@ -113,6 +115,15 @@ int main(int argc, char **argv) {
 
     // init semaphore to MUTEX shared memory
     shmutex = init_shared_memory_mutex();
+
+
+    // init message queues
+    // and returns identifier
+    shmem->mqid = msgget(IPC_PRIVATE, 0700 | IPC_CREAT);
+    if (shmem->mqid == -1) {
+        printf("ERROR init_message_queue CODE [%d]", shmem->mqid);
+        exit(9);
+    }
 
 
     // logging the first message
