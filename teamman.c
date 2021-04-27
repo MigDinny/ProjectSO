@@ -23,12 +23,10 @@ static void hdl (int sig, siginfo_t *siginfo, void *context)
     exit(0);
 }
 
-
 void terminate_teamman(int teamID, pthread_t carThreadIds[]) {
 
 	// wait for all threads to finish (eventually) (join returns immediately if already exited)
     for (int i = 0; i < teams[teamID].nCars; i++) { 
-        printf("WAITING CAR %d\n", i);
         pthread_join(carThreadIds[i], NULL);
     }
 
@@ -39,9 +37,6 @@ void terminate_teamman(int teamID, pthread_t carThreadIds[]) {
 	pthread_cond_destroy(&in_box);
 	pthread_cond_destroy(&out_box);
 	
-    printf("exit\n");
-
-
     struct sigaction act;
  
 	memset (&act, '\0', sizeof(act));
@@ -60,8 +55,7 @@ void terminate_teamman(int teamID, pthread_t carThreadIds[]) {
 
 void team_manager_worker(int teamID) {
 
-    // <<< DEBUG >>>
-    signal(SIGINT, SIG_DFL);
+    signal(SIGUSR1, SIG_IGN);
 
     // init mutexes and conds
     pthread_mutex_init(&tc_mutex, NULL);
@@ -75,6 +69,8 @@ void team_manager_worker(int teamID) {
     awaitingSafetyCars = 0;
     teams[teamID].status = FREE;
 	runningCars = teams[teamID].nCars;
+    int sleepTime = 0;
+    int fuelSleepTime = 2;
 
     for (int i = 0; i < teams[teamID].nCars; i++) {  
         id[i] = teamID*config.nCars + i;
@@ -85,22 +81,30 @@ void team_manager_worker(int teamID) {
     while (1) {
         pthread_mutex_lock(&tc_mutex);
 
-        while (awaitingCars == 0 && runningCars > 0)
-            pthread_cond_wait(&in_box, &tc_mutex); // @TODO consider timed_wait, might be stuck forever
+        while (awaitingCars == 0 && runningCars > 0) 
+            pthread_cond_wait(&in_box, &tc_mutex);
         
         // check again because this iteration might be outdated because cond_wait blocked
         if (runningCars == 0) break;
 
-        printf("aC = %d  car = %d  \n",awaitingCars, boxCarIndex);
         teams[teamID].status = BUSY;
 
+        // refuel anyway
         cars[boxCarIndex].fuel = config.fuelTank;
         teams[teamID].countRefuels++;
         
         pthread_mutex_unlock(&tc_mutex);
 
-        // sleep 2 time units
-        usleep(2 * 1000 * 1000 * config.multiplier);
+        // calculate sleep time based on failure variable
+        if (isTeamCarFailure == 1) {
+            isTeamCarFailure = 0;
+            sleepTime = config.tMinBox + (rand() % (config.tMaxBox-config.tMinBox+1));
+        } else {
+            sleepTime = fuelSleepTime;
+        }
+
+        // sleep X time units
+        usleep(sleepTime * 1000 * 1000 * config.multiplier);
 
         pthread_mutex_lock(&tc_mutex);
 
@@ -109,6 +113,9 @@ void team_manager_worker(int teamID) {
         if (awaitingSafetyCars > 1)
             teams[teamID].status = RESERVED;
 
+		awaitingCars--;
+        if (cars[boxCarIndex].status == SAFETY)
+            awaitingSafetyCars--;
 
         pthread_cond_signal(&out_box);
         pthread_mutex_unlock(&tc_mutex);
