@@ -13,7 +13,6 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 
 #include "include.h"
 
@@ -27,6 +26,7 @@ void terminate_teamman(int teamID, pthread_t carThreadIds[]) {
 
 	// wait for all threads to finish (eventually) (join returns immediately if already exited)
     for (int i = 0; i < teams[teamID].nCars; i++) { 
+        printf("WAITING CAR %d\n", i);
         pthread_join(carThreadIds[i], NULL);
     }
 
@@ -37,6 +37,9 @@ void terminate_teamman(int teamID, pthread_t carThreadIds[]) {
 	pthread_cond_destroy(&in_box);
 	pthread_cond_destroy(&out_box);
 	
+    printf("exit\n");
+
+
     struct sigaction act;
  
 	memset (&act, '\0', sizeof(act));
@@ -55,7 +58,8 @@ void terminate_teamman(int teamID, pthread_t carThreadIds[]) {
 
 void team_manager_worker(int teamID) {
 
-    signal(SIGUSR1, SIG_IGN);
+    // <<< DEBUG >>>
+    signal(SIGINT, SIG_DFL);
 
     // init mutexes and conds
     pthread_mutex_init(&tc_mutex, NULL);
@@ -72,6 +76,8 @@ void team_manager_worker(int teamID) {
     int sleepTime = 0;
     int fuelSleepTime = 2;
 
+    sprintf(teams[teamID].teamName, "%s%d", "team", teamID);
+
     for (int i = 0; i < teams[teamID].nCars; i++) {  
         id[i] = teamID*config.nCars + i;
         pthread_create(&carThreadIds[i], NULL, car_worker, &id[i]);
@@ -81,8 +87,8 @@ void team_manager_worker(int teamID) {
     while (1) {
         pthread_mutex_lock(&tc_mutex);
 
-        while (awaitingCars == 0 && runningCars > 0) 
-            pthread_cond_wait(&in_box, &tc_mutex);
+        while (awaitingCars == 0 && runningCars > 0)
+            pthread_cond_wait(&in_box, &tc_mutex); // @TODO consider timed_wait, might be stuck forever
         
         // check again because this iteration might be outdated because cond_wait blocked
         if (runningCars == 0) break;
@@ -112,9 +118,6 @@ void team_manager_worker(int teamID) {
         if (awaitingSafetyCars > 1)
             teams[teamID].status = RESERVED;
 
-		awaitingCars--;
-        if (cars[boxCarIndex].status == SAFETY)
-            awaitingSafetyCars--;
 
         pthread_cond_signal(&out_box);
         pthread_mutex_unlock(&tc_mutex);
