@@ -23,7 +23,6 @@ static void hdl (int sig, siginfo_t *siginfo, void *context)
     exit(0);
 }
 
-
 void terminate_teamman(int teamID, pthread_t carThreadIds[]) {
 
 	// wait for all threads to finish (eventually) (join returns immediately if already exited)
@@ -70,6 +69,8 @@ void team_manager_worker(int teamID) {
     awaitingSafetyCars = 0;
     teams[teamID].status = FREE;
 	runningCars = teams[teamID].nCars;
+    int sleepTime = 0;
+    int fuelSleepTime = 2;
 
     for (int i = 0; i < teams[teamID].nCars; i++) {  
         id[i] = teamID*config.nCars + i;
@@ -88,12 +89,21 @@ void team_manager_worker(int teamID) {
 
         teams[teamID].status = BUSY;
 
+        // refuel anyway
         cars[boxCarIndex].fuel = config.fuelTank;
         
         pthread_mutex_unlock(&tc_mutex);
 
-        // sleep 2 time units
-        usleep(2 * 1000 * 1000 * config.multiplier);
+        // calculate sleep time based on failure variable
+        if (isTeamCarFailure == 1) {
+            isTeamCarFailure = 0;
+            sleepTime = config.tMinBox + (rand() % (config.tMaxBox-config.tMinBox+1));
+        } else {
+            sleepTime = fuelSleepTime;
+        }
+
+        // sleep X time units
+        usleep(sleepTime * 1000 * 1000 * config.multiplier);
 
         pthread_mutex_lock(&tc_mutex);
 

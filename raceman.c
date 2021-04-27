@@ -23,7 +23,6 @@
 
 // globals 
 int pCommandsRead;
-int nTeams = 0;
 int nPipes = 0;
 int totalCars = 0;
 int finishedCars = 0;
@@ -34,22 +33,22 @@ int *pipes;
 int fdmax = 0;
 
 void add_teams(char team[MAX_TEAM_NAME]) {      // create new team
-    strcpy(teams[nTeams].teamName, team);
-    teams[nTeams].nCars = 0;
+    strcpy(teams[shmem->nTeams].teamName, team);
+    teams[shmem->nTeams].nCars = 0;
 
-    nTeams++;
+    shmem->nTeams++;
 }
 
 int check_team(char team[MAX_TEAM_NAME]) {      // search for team, add it in case didn't found
                                                 // returns -1 in case the shmem is full
-    for (int i = 0; i < nTeams; i++) {
+    for (int i = 0; i < shmem->nTeams; i++) {
         if (strcmp(teams[i].teamName, team) == 0) {
             return i;
         }
     }
-    if (nTeams < config.nTeams) {
+    if (shmem->nTeams < config.nTeams) {
         add_teams(team);
-        return nTeams - 1;
+        return shmem->nTeams - 1;
     }
     return -1;
 }
@@ -86,13 +85,13 @@ int add_car(char team[MAX_TEAM_NAME], int carNum, int speed, float consumption, 
 }
 
 void start_race() {
-    shmem->status = ON;     // mutex nedded
+    shmem->status = ON;
     
-    int id[nTeams];
-    int processID_temp[nTeams];
-    int pipes_temp[nTeams + 1];
+    int id[shmem->nTeams];
+    int processID_temp[shmem->nTeams];
+    int pipes_temp[shmem->nTeams + 1];
 
-    for (int i = 0; i < nTeams; i++) {
+    for (int i = 0; i < shmem->nTeams; i++) {
         id[i] = i;
 
         pipe(channel);
@@ -110,7 +109,7 @@ void start_race() {
             fdmax = pipes_temp[i + 1];
     }
 
-    nPipes = nTeams + 1;
+    nPipes = shmem->nTeams + 1;
 
     pipes_temp[0] = pipes[0];
     pipes = pipes_temp;
@@ -181,12 +180,12 @@ void check_input(char command[MAX_COMMAND]){
             }
 
         } else if (countWords == 2 && strcmp(address[0], "START") == 0 && strcmp(address[1], "RACE") == 0) {
-            if (nTeams >= 3) {
+            if (shmem->nTeams >= 3) {
                 sprintf(reply, "NEW COMMAND RECEIVED: %s", command);
 
                 start_race();                // TODO: function and verify current status
 
-            } else if (nTeams < 3){             // check numbers of teams, at least 3 
+            } else if (shmem->nTeams < 3){             // check numbers of teams, at least 3 
                 sprintf(reply, "CANNOT START, NOT ENOUGH TEAMS");
 
             } else {
@@ -196,8 +195,7 @@ void check_input(char command[MAX_COMMAND]){
 
         } else if (strcmp(command, "pSHMEM") == 0) {                // print shmem, remove for final version
             printf("!%d!\n", shmem->status);
-            printf("nteams > %d\n", nTeams);
-            for (int i = 0; i < nTeams; i++) {
+            for (int i = 0; i < shmem->nTeams; i++) {
                 for(int j = 0; j < teams[i].nCars; j++) {
                     printf("Team %d - [%s]; Car %d_%d\n", i, teams[i].teamName, j, cars[i*config.nCars + j].pos);
                 }
@@ -216,15 +214,15 @@ void end_race() {
     shmem->status = OFF;
 
     // cleanup
-    for (int i = 1; i <= nTeams; i++)
+    for (int i = 1; i <= shmem->nTeams; i++)
         close(pipes[i]);
 
     // kill child processes
-    for (int u = 0; u < nTeams; u++)
+    for (int u = 0; u < shmem->nTeams; u++)
         kill(processIDs[u], SIGTERM);
     
     // wait for all children
-    for (int i = 0; i < nTeams; i++)
+    for (int i = 0; i < shmem->nTeams; i++)
         wait(NULL);
 
     // reset pipes stuff to allow another race
@@ -236,7 +234,7 @@ void end_race() {
     pipes = pipes_temp; 
 
     // reset cars positions
-    for (int i = 0; i < nTeams; i++) {
+    for (int i = 0; i < shmem->nTeams; i++) {
         for(int j = 0; j < teams[i].nCars; j++) {
             cars[i*config.nCars + j].fuel = config.fuelTank;
             cars[i*config.nCars + j].laps = 0;
@@ -303,7 +301,7 @@ void race_manager_worker() {
             for (int i = 1; i < nPipes; i++) { 
                 if(FD_ISSET(pipes[i], &read_set)) {
                     read(pipes[i], &cmd, sizeof(cmd));
-
+                    
                     if(cmd.carStatus == FINISHED)
                         finishedCars++;
                     
