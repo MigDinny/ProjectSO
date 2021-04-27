@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
 
 #include "include.h"
 
@@ -46,8 +49,23 @@ void *car_worker(void *car_index) {
 
 	//printf("%f %f %f\n", fuel1, fuel2, fuel4);
 	
+	message_t receivedMSG;
+	int receivedBytes = 0;
+	int isCarFailure = 0;
+
 	// each iteration is a TIME UNIT
 	while(1) {
+
+		// try to read a message from MQ; NO BLOCK
+		receivedBytes = msgrcv(shmem->mqid, &receivedMSG, sizeof(message_t), my_index+1, IPC_NOWAIT);
+
+		if (receivedBytes > 0) {
+			printf("[%d] RECEIVED failure \n", my_index);
+			cars[my_index].status = SAFETY;
+			isCarFailure = 1;
+			receivedBytes = 0;
+			tryBox = 1;
+		}
 
 		// proccess a time unit -> update positions
 		if (cars[my_index].status == SAFETY) {
@@ -87,6 +105,12 @@ void *car_worker(void *car_index) {
 					boxCarIndex = my_index;
 
 					printf("[%d] in box\n", my_index);
+
+					if (isCarFailure == 1) {
+						isTeamCarFailure = 1;
+						isCarFailure = 0;
+					}
+
 					// inside box
 					cars[my_index].status = BOX;
 					pthread_cond_signal(&in_box);
@@ -116,7 +140,7 @@ void *car_worker(void *car_index) {
 			// fuel for only 2 laps -> SAFETY MODE
 			cars[my_index].status = SAFETY;
 			printf("[%d] safety mode\n", my_index);
-			
+			tryBox = 1;
 			// @TODO some trigger here
 		} else if (cars[my_index].fuel <= 0) {
 			// NO FUEL 
