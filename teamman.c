@@ -68,7 +68,7 @@ void team_manager_worker(int teamID) {
     awaitingCars = 0;
     awaitingSafetyCars = 0;
     teams[teamID].status = FREE;
-	runningCars = teams[teamID].nCars;
+	runningCarsT = teams[teamID].nCars;
     int sleepTime = 0;
     int fuelSleepTime = 2;
 
@@ -81,11 +81,11 @@ void team_manager_worker(int teamID) {
     while (1) {
         pthread_mutex_lock(&tc_mutex);
 
-        while (awaitingCars == 0 && runningCars > 0) 
+        while (awaitingCars == 0 && runningCarsT > 0) 
             pthread_cond_wait(&in_box, &tc_mutex);
         
         // check again because this iteration might be outdated because cond_wait blocked
-        if (runningCars == 0) break;
+        if (runningCarsT == 0) break;
 
         teams[teamID].status = BUSY;
 

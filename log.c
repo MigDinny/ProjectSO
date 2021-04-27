@@ -54,7 +54,7 @@ void plog(char line[MAX_SIZE]) {
     timer = time(NULL);
     strcpy(timestr, ctime(&timer));
     
-    printf("%.*s: %s\n", 8, timestr + 11, line);
+    printf("%.*s > %s\n", 8, timestr + 11, line);
 
     fprintf(logfile, "%.*s: %s\n", 8, timestr + 11, line);
     fflush(logfile);

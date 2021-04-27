@@ -65,7 +65,6 @@ int add_car(char team[MAX_TEAM_NAME], int carNum, int speed, float consumption, 
             cars[ind].speed = speed;
             cars[ind].consumption = consumption;
             cars[ind].reliability = reliability;
-            strcpy(cars[ind].team, teams[teamID].teamName);
 		    cars[ind].fuel = config.fuelTank;
             cars[ind].boxStops = 0;
 		    cars[ind].pos = 0;
@@ -97,6 +96,7 @@ void start_race() {
 
     for (int i = 0; i < shmem->nTeams; i++) {
         id[i] = i;
+        shmem->runningCarsTotal += teams[i].nCars;
 
         pipe(channel);
 
@@ -256,6 +256,8 @@ void end_race() {
         shmem->notSIGUSR1 = 1;
         return;
     }
+
+    stats();
 
     // close named pipe and terminate the program
     unlink(PIPE_COMMANDS);

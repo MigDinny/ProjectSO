@@ -59,8 +59,6 @@ typedef struct car_t {
     float consumption;
     int reliability;
 
-    char team[MAX_TEAM_NAME];
-
 	// control variables
 	float fuel; // current fuel
 	int pos; // current position
@@ -80,6 +78,7 @@ typedef struct team_t {
 typedef struct shmem_t {
     enum RACE_STATUS status;
     int nCarsTotal;
+    int runningCarsTotal;
     int mqid;
     int nTeams;
     int notSIGUSR1;
@@ -127,6 +126,17 @@ void check_commas(char *);
 int load_config(char*);
 
 
+// STATS_RACE
+
+char intInArray(int [], int, int);
+
+int find_first (int [], int);
+
+int find_last (int [], int);
+
+void stats();
+
+
 // RACE MANAGER
 
 int channel[2];     // unnamed pipe between raceman and teamman | 0 -> reading | 1 -> writing
@@ -151,7 +161,7 @@ void race_manager_worker();
 void team_manager_worker(int);
 int awaitingCars;
 int awaitingSafetyCars;
-int runningCars;
+int runningCarsT;
 int isTeamCarFailure;
 int boxCarIndex;
 pthread_mutex_t tc_mutex;
