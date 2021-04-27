@@ -88,7 +88,7 @@ int find_last (int ignoreCarIDs [], int length) {
     return carID;
 }
 
-void stats () {
+void stats() {
     char statsRace[MAX_COMMAND];
     plog("STATS:");
     
@@ -158,10 +158,7 @@ void terminate(int k) {
 }
 
 void sigint(int signum) {
-
-    printf(" SIGINT detected\n");
-
-    stats();
+    plog(" SIGINT detected");
 
     if (shmem->status == OFF)
         terminate(1);
@@ -185,6 +182,8 @@ void sigterm(int signum) {
 // redirect signal to racemanager
 void sigusr1_main(int signum) {
     plog("SIGUSR1 detected!");
+
+    stats();
 
     shmem->status = OFF;
     shmem->notSIGUSR1 = 0;
