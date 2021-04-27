@@ -94,7 +94,6 @@ void start_race() {
     int id[shmem->nTeams];
     int processID_temp[shmem->nTeams];
     int pipes_temp[shmem->nTeams + 1];
-  
 
     for (int i = 0; i < shmem->nTeams; i++) {
         id[i] = i;
@@ -251,6 +250,10 @@ void end_race() {
         teams[i].status = FREE;
     }
 
+    // wait for all children
+    printf("BEFORE WAIT\n");
+    for (int i = 0; i < shmem->nTeams; i++) wait(NULL);
+    printf("AFTER WAIT\n");
     plog("RACE ENDED!");
 
     // dont proceed if sigusr1 was caught and print stats

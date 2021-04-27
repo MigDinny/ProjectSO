@@ -78,10 +78,11 @@ typedef struct team_t {
 } team_t;
 
 typedef struct shmem_t {
+    
     enum RACE_STATUS status;
-
+    int nCarsTotal;  
+    int mqid;
     int nTeams;
-    int nCarsTotal;
     int notSIGUSR1;
 
 } shmem_t;
@@ -92,6 +93,9 @@ typedef struct command_t {
     char command[MAX_COMMAND];
 } command_t;
 
+typedef struct message_t {
+    long mtype;
+} message_t;
 
 // GLOBALS
 
@@ -150,6 +154,7 @@ void team_manager_worker(int);
 int awaitingCars;
 int awaitingSafetyCars;
 int runningCars;
+int isTeamCarFailure;
 int boxCarIndex;
 pthread_mutex_t tc_mutex;
 pthread_cond_t in_box;
