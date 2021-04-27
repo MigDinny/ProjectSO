@@ -47,7 +47,7 @@ void *car_worker(void *car_index) {
 	float fuel4 = 4 * fuel1;
 	int tryBox = 0; // 0 false 1 true
 
-	printf("%f %f %f\n", fuel1, fuel2, fuel4);
+	//printf("%f %f %f\n", fuel1, fuel2, fuel4);
 	
 	message_t receivedMSG;
 	int receivedBytes = 0;
@@ -119,10 +119,6 @@ void *car_worker(void *car_index) {
 
 					// left box
 					tryBox = 0;
-					awaitingCars--;
-					if (cars[my_index].status == SAFETY)
-						awaitingSafetyCars--;
-
 					cars[my_index].status = RUNNING;
 				}
 
