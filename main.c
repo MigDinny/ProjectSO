@@ -175,6 +175,13 @@ int main(int argc, char **argv) {
         fgets(cmdSend, MAX_COMMAND, stdin);     // reads the command and removes \n
         command_t cmd;                            // sends the command
         strcpy(cmd.command, cmdSend);
+
+        if (shmem->status == ON) {
+            plog("COMMAND NOT ALLOWED, RACE ALREADY STARTED");
+            cmd.command[0] = '\0';
+            continue;
+        }
+
         write(pCommandsWrite, &cmd, sizeof(cmd));
     }
 
