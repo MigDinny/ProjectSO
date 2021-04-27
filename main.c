@@ -169,21 +169,14 @@ void sigint(int signum) {
     terminate(0);
 }
 
-void sigtstp(int signum) {
-    signal(SIGTSTP, sigtstp);
-    shmem->status = OFF;
-
-    printf(" SIGTSTP detected\n");
+void sigtstp(int signum) {    
+    plog("SIGTSTP detected\n");
 
     stats();
 }
 
 // the program ended normally, received this signal by raceman
 void sigterm(int signum) {
-
-    
-    stats();
-  
     terminate(0);
 }
 

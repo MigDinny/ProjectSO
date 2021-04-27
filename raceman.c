@@ -225,11 +225,11 @@ void end_race() {
         close(pipes[i]);
 
     // kill child processes
-    for (int u = 0; u < shmem->nTeams; u++){
+    for (int u = 0; u < shmem->nTeams; u++)
         kill(processIDs[u], SIGTERM);
     
     // wait for all children
-    for (int i = 0; i < nTeams; i++)
+    for (int i = 0; i < shmem->nTeams; i++)
         wait(NULL);
 
     // reset pipes stuff to allow another race
@@ -241,7 +241,7 @@ void end_race() {
     pipes = pipes_temp; 
 
     // reset cars positions
-    for (int i = 0; i < nTeams; i++) {
+    for (int i = 0; i < shmem->nTeams; i++) {
         for(int j = 0; j < teams[i].nCars; j++) {
             cars[i*config.nCars + j].fuel = config.fuelTank;
             cars[i*config.nCars + j].laps = 0;
@@ -251,13 +251,7 @@ void end_race() {
         teams[i].status = FREE;
     }
 
-    // wait for all children
-    printf("BEFORE WAIT\n");
-    for (int i = 0; i < shmem->nTeams; i++) wait(NULL);
-    printf("AFTER WAIT\n");
-      
     plog("RACE ENDED!");
-
 
     // dont proceed if sigusr1 was caught and print stats
     if (!shmem->notSIGUSR1) {
@@ -273,6 +267,7 @@ void end_race() {
     kill(getppid(), SIGTERM);
     exit(0);
 }
+
 
 void race_manager_worker() {
     
