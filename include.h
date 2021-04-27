@@ -59,21 +59,27 @@ typedef struct car_t {
     float consumption;
     int reliability;
 
+    char team[MAX_TEAM_NAME];
+
 	// control variables
 	float fuel; // current fuel
 	int pos; // current position
     int laps; // laps
+    int boxStops;
 	enum CAR_STATUS status;
 } car_t;
 
 typedef struct team_t {
     char teamName[MAX_TEAM_NAME];
     int nCars;
+    int countBreakDowns;
+    int countRefuels;
     enum BOX_STATUS status;
 } team_t;
 
 typedef struct shmem_t {
     enum RACE_STATUS status;
+    int nCarsTotal;
     int mqid;
     int nTeams;
     int notSIGUSR1;

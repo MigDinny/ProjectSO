@@ -113,6 +113,7 @@ void *car_worker(void *car_index) {
 
 					// inside box
 					cars[my_index].status = BOX;
+					cars[my_index].boxStops++;
 					pthread_cond_signal(&in_box);
 					pthread_cond_wait(&out_box, &tc_mutex);
 					printf("[%d] left box\n", my_index);

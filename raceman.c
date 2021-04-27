@@ -65,13 +65,17 @@ int add_car(char team[MAX_TEAM_NAME], int carNum, int speed, float consumption, 
             cars[ind].speed = speed;
             cars[ind].consumption = consumption;
             cars[ind].reliability = reliability;
+            strcpy(cars[ind].team, teams[teamID].teamName);
 		    cars[ind].fuel = config.fuelTank;
+            cars[ind].boxStops = 0;
 		    cars[ind].pos = 0;
 		    cars[ind].laps = 0;
 		    cars[ind].status = RUNNING;
 
             teams[teamID].nCars++;
             totalCars++;
+            shmem->nCarsTotal++;
+
         } else {
             plog("CAN'T ADD MORE CARS TO THIS TEAM");
             return -1;
@@ -279,6 +283,7 @@ void race_manager_worker() {
     fdmax = pipe_commands[0]; // max file descriptor (it is always updated)
     pipes = pipe_commands; // update pointer
     nPipes = 1;
+    shmem->nTeams = 0;
 
     // each iteration --> one set check
     while(1) {
