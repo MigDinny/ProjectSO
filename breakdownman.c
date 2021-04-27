@@ -20,8 +20,6 @@
 #include "include.h"
 
 void breakdown_manager_worker() {
-    signal(SIGINT, SIG_DFL);
-
     plog("BREAKDOWN MANAGER STARTED");
 
     int delay = config.tBreakDown;
