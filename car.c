@@ -95,10 +95,6 @@ void *car_worker(void *car_index) {
 
 					// left box
 					tryBox = 0;
-					awaitingCars--;
-					if (cars[my_index].status == SAFETY)
-						awaitingSafetyCars--;
-
 					cars[my_index].status = RUNNING;
 				}
 
