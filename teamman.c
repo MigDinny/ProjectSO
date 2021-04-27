@@ -80,13 +80,12 @@ void team_manager_worker(int teamID) {
     while (1) {
         pthread_mutex_lock(&tc_mutex);
 
-        while (awaitingCars == 0 && runningCars > 0)
-            pthread_cond_wait(&in_box, &tc_mutex); // @TODO consider timed_wait, might be stuck forever
+        while (awaitingCars == 0 && runningCars > 0) 
+            pthread_cond_wait(&in_box, &tc_mutex);
         
         // check again because this iteration might be outdated because cond_wait blocked
         if (runningCars == 0) break;
 
-        //printf("aC = %d  car = %d  \n",awaitingCars, boxCarIndex);
         teams[teamID].status = BUSY;
 
         cars[boxCarIndex].fuel = config.fuelTank;
@@ -104,6 +103,9 @@ void team_manager_worker(int teamID) {
         if (awaitingSafetyCars > 1)
             teams[teamID].status = RESERVED;
 
+		awaitingCars--;
+        if (cars[boxCarIndex].status == SAFETY)
+            awaitingSafetyCars--;
 
         pthread_cond_signal(&out_box);
         pthread_mutex_unlock(&tc_mutex);
