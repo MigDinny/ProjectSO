@@ -21,7 +21,8 @@
 void finish(int my_index) {
 	
 	// minus one car 
-	runningCars--;
+	runningCarsT--;
+	shmem->runningCarsTotal--;
 	
 	// [Unnamed Pipe] signal raceman: this car finished
 	command_t send;
@@ -31,7 +32,7 @@ void finish(int my_index) {
 	//close(channel[1]);
 	
 	// if last car, unblock team-manager (it is stuck on while loop)
-	if (runningCars == 0)
+	if (runningCarsT == 0)
 		pthread_cond_signal(&in_box);
 	
 	pthread_exit(NULL);
@@ -65,6 +66,7 @@ void *car_worker(void *car_index) {
 			isCarFailure = 1;
 			receivedBytes = 0;
 			tryBox = 1;
+			teams[team_index].countBreakDowns++;
 		}
 
 		// proccess a time unit -> update positions
