@@ -65,7 +65,7 @@ int find_last (int ignoreCarIDs [], int length) {
 
 
 // 20:05:59 > #1  CarNo: 1; Team: A; Laps: 10; Box stops: 4;
-void stats() {
+void stats(int mode) {
     char statsRace[MAX_COMMAND];
     printf("\n");
     plog("STATS:");
@@ -102,23 +102,18 @@ void stats() {
         sprintf(statsRace, "%d position: Car: %d; Team: %s; Laps: %d; Box stops: %d", shmem->nCarsTotal, cars[lastID].carNum, teams[team_index].teamName, cars[lastID].laps, cars[lastID].boxStops);
         plog(statsRace);
     }
-    
-    int nRefuels = 0;
-    int nBreaks = 0;
 
-    // print info of each team
-    for (int i = 0; i < shmem->nTeams; i++) {
-        nRefuels += teams[i].countRefuels;
-        nBreaks += teams[i].countBreakDowns;
+    sprintf(statsRace, "Number of refuels: %d", shmem->countRefuels);
+    plog(statsRace);
+    sprintf(statsRace, "Number of breakdowns: %d", shmem->countBreakDowns);
+    plog(statsRace);
 
+    if (mode == 0)
+        plog("Current number of cars in lane: 0");
+    else {
+        sprintf(statsRace, "Current number of cars in lane: %d", shmem->runningCarsTotal);
+        plog(statsRace); 
     }
-    sprintf(statsRace, "Number of refuels: %d", nRefuels);
-    plog(statsRace);
-    sprintf(statsRace, "Number of breakdowns: %d", nBreaks);
-    plog(statsRace);
-
-    sprintf(statsRace, "Current number of cars in lane: %d", shmem->runningCarsTotal);
-    plog(statsRace); 
     printf("\n");
 
 }

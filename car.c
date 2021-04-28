@@ -52,6 +52,7 @@ void *car_worker(void *car_index) {
     float fuel2 = 2 * fuel1;
 	float fuel4 = 4 * fuel1;
 	int tryBox = 0; // 0 false 1 true
+	cars[my_index].boxStops = 0;
 	
 	message_t receivedMSG;
 	int receivedBytes = 0;
@@ -64,16 +65,16 @@ void *car_worker(void *car_index) {
 		receivedBytes = msgrcv(shmem->mqid, &receivedMSG, sizeof(message_t), my_index+1, IPC_NOWAIT);
 
 		if (receivedBytes > 0) {
-			sprintf(pCommand, "NEW PROBLEM IN CAR %d", cars[my_index].carNum);
+			sprintf(pCommand, "NEW PROBLEM ON CAR %d", cars[my_index].carNum);
 			plog(pCommand);
 
 			cars[my_index].status = SAFETY;
 			sprintf(pCommand, "[%d] changed status to SAFETY", my_index);
-			dlog(pCommand);
+			plog(pCommand);
 			isCarFailure = 1;
 			receivedBytes = 0;
 			tryBox = 1;
-			teams[team_index].countBreakDowns++;
+			shmem->countBreakDowns++;
 		}
 
 		// proccess a time unit -> update positions
@@ -96,7 +97,7 @@ void *car_worker(void *car_index) {
 			if (cars[my_index].laps >= config.nTurns) {
 				cars[my_index].status = FINISHED;
 				sprintf(pCommand, "[%d] changed status to FINISHED", my_index);
-				dlog(pCommand);
+				plog(pCommand);
 				sprintf(pCommand, "[%d] finished\n", my_index);
 				dlog(pCommand);
 
@@ -128,9 +129,9 @@ void *car_worker(void *car_index) {
 					// inside box
 					cars[my_index].status = BOX;
 					sprintf(pCommand, "[%d] changed status to BOX", my_index);
-					dlog(pCommand);
+					plog(pCommand);
 
-					cars[my_index].boxStops++;
+					//cars[my_index].boxStops++;
 					pthread_cond_signal(&in_box);
 					pthread_cond_wait(&out_box, &tc_mutex);
 					sprintf(pCommand, "[%d] left box", my_index);
@@ -140,7 +141,7 @@ void *car_worker(void *car_index) {
 					tryBox = 0;
 					cars[my_index].status = RUNNING;
 					sprintf(pCommand, "[%d] changed status to RUNNING", my_index);
-					dlog(pCommand);
+					plog(pCommand);
 				}
 
 				pthread_mutex_unlock(&tc_mutex);
@@ -162,14 +163,14 @@ void *car_worker(void *car_index) {
 			// fuel for only 2 laps -> SAFETY MODE
 			cars[my_index].status = SAFETY;
 			sprintf(pCommand, "[%d] changed status to SAFETY", my_index);
-			dlog(pCommand);
+			plog(pCommand);
 			tryBox = 1;
 			
 		} else if (cars[my_index].fuel <= 0) {
 			// NO FUEL 
 			cars[my_index].status = NO_FUEL;
 			sprintf(pCommand, "[%d] changed status to NO FUEL", my_index);
-			dlog(pCommand);
+			plog(pCommand);
 			finish(my_index);
 		}
 

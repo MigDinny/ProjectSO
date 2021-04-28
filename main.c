@@ -54,7 +54,6 @@ void terminate(int k) {
 void sigint(int signum) {
     plog("SIGINT detected");
     
-    stats();
 
     if (shmem->status == OFF)
         terminate(1);
@@ -66,7 +65,7 @@ void sigint(int signum) {
 
 void sigtstp(int signum) {
     plog("SIGTSTP detected!");
-    stats();
+    stats(1);
 }
 
 // the program ended normally, received this signal by raceman
@@ -76,10 +75,12 @@ void sigterm(int signum) {
 
 // redirect signal to racemanager
 void sigusr1_main(int signum) {
-    plog("SIGUSR1 detected!");
 
-    if (shmem->status == OFF)
+    if (shmem->status == OFF) {
+        plog("SIGUSR1 detected - race not started yet.");
         return;
+    } else
+        plog("SIGUSR1 detected!");
     
     shmem->finishing = 1;
     shmem->status = OFF;

@@ -91,7 +91,8 @@ void team_manager_worker(int teamID) {
 
         // refuel anyway
         cars[boxCarIndex].fuel = config.fuelTank;
-        teams[teamID].countRefuels++;
+        shmem->countRefuels++;
+        cars[boxCarIndex].boxStops++;
         
         pthread_mutex_unlock(&tc_mutex);
 
