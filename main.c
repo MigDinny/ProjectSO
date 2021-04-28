@@ -81,9 +81,9 @@ void sigusr1_main(int signum) {
     shmem->finishing = 1;
     plog("SIGUSR1 detected!");
 
-    shmem->status = OFF;
     shmem->notSIGUSR1 = 0;
-    gotSignal = 1;
+    shmem->status = OFF;
+
 }
 
 /*
@@ -103,7 +103,6 @@ int main(int argc, char **argv) {
     signal(SIGUSR1, SIG_IGN); // prevent this process from dying!
     signal(SIGINT, SIG_IGN); // prevent this process from dying!
 
-    gotSignal = 0;
     int status = 0; // status codes for commands
     init_log();
 
