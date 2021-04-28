@@ -241,7 +241,7 @@ void end_race() {
         teams[i].status = FREE;
     }
 
-    dlog("RACE ENDED!");
+    plog("RACE ENDED!");
 
     shmem->finishing = 0;
 
