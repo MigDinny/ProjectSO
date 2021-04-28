@@ -76,9 +76,12 @@ void sigterm(int signum) {
 
 // redirect signal to racemanager
 void sigusr1_main(int signum) {
-    shmem->finishing = 1;
     plog("SIGUSR1 detected!");
 
+    if (shmem->status == OFF)
+        return;
+    
+    shmem->finishing = 1;
     shmem->status = OFF;
     shmem->notSIGUSR1 = 0;
     gotSignal = 1;
