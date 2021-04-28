@@ -250,9 +250,11 @@ void end_race() {
 
     plog("RACE ENDED!");
 
+    shmem->finishing = 0;
+
     // dont proceed if sigusr1 was caught and print stats
     if (!shmem->notSIGUSR1) {
-        // stats();
+        stats();
         shmem->notSIGUSR1 = 1;
         return;
     }

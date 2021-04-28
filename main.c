@@ -80,6 +80,7 @@ void sigterm(int signum) {
 
 // redirect signal to racemanager
 void sigusr1_main(int signum) {
+    shmem->finishing = 1;
     plog("SIGUSR1 detected!");
 
     shmem->status = OFF;
@@ -188,7 +189,7 @@ int main(int argc, char **argv) {
         command_t cmd;                            // sends the command
         strcpy(cmd.command, cmdSend);
 
-        if (shmem->status == ON) {
+        if (shmem->status == ON || shmem->finishing == 1) {
             plog("COMMAND NOT ALLOWED, RACE ALREADY STARTED");
             cmd.command[0] = '\0';
             continue;

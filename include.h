@@ -82,6 +82,7 @@ typedef struct shmem_t {
     int mqid;
     int nTeams;
     int notSIGUSR1;
+    int finishing;
 } shmem_t;
 
 typedef struct command_t {
