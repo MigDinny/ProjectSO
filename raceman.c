@@ -120,6 +120,9 @@ void start_race() {
     pipes = pipes_temp;
 
     processIDs = processID_temp;
+
+
+    kill(bmpid, SIGUSR2);
 }
 
 void remove_commas(char* str) {

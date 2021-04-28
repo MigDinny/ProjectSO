@@ -104,6 +104,8 @@ int main(int argc, char **argv) {
     // We need to ignore all signals first so the child processes inherit SIG_IGN.
     signal(SIGTSTP, SIG_IGN); // prevent this process from being suspended!
     signal(SIGUSR1, SIG_IGN); // prevent this process from dying!
+    signal(SIGUSR2, SIG_IGN); // prevent this process from dying!
+    signal(SIGTERM, SIG_IGN); // prevent this process from dying!
     signal(SIGINT, SIG_IGN); // prevent this process from dying!
 
     int status = 0; // status codes for commands
