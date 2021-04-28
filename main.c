@@ -31,8 +31,6 @@
 
 
 void terminate(int k) {
-    //stats();
-    // print who won if exists
 
     plog("SIMULATOR CLOSING");
 
@@ -78,9 +76,13 @@ void sigterm(int signum) {
 
 // redirect signal to racemanager
 void sigusr1_main(int signum) {
-    shmem->finishing = 1;
     plog("SIGUSR1 detected!");
 
+    if (shmem->status == OFF)
+        return;
+    
+    shmem->finishing = 1;
+    shmem->status = OFF;
     shmem->notSIGUSR1 = 0;
     shmem->status = OFF;
 
@@ -104,18 +106,20 @@ int main(int argc, char **argv) {
     signal(SIGINT, SIG_IGN); // prevent this process from dying!
 
     int status = 0; // status codes for commands
+    char command_error[MAX_COMMAND];
     init_log();
 
     // check parameters
     if (argc != 2) {
-		printf("ERROR No filename given\n");
+		plog("ERROR No filename given\n");
 		exit(3);
 	}
 
 
     // check config loading
     if ( (status = load_config(argv[1])) != 0) {
-        printf("ERROR load_config CODE [%d]", status);
+        sprintf(command_error, "ERROR load_config CODE [%d]", status);
+        plog(command_error);
         exit(5);
     }
 	
@@ -123,7 +127,8 @@ int main(int argc, char **argv) {
 	 // init shared memory
     status = init_shared_memory();
     if (status < 0) {
-        printf("ERROR init_shared_memory CODE [%d]", status);
+        sprintf(command_error, "ERROR init_shared_memory CODE [%d]", status);
+        plog(command_error);
         exit(4);
     }
 
@@ -136,7 +141,8 @@ int main(int argc, char **argv) {
     // and returns identifier
     shmem->mqid = msgget(IPC_PRIVATE, 0700 | IPC_CREAT);
     if (shmem->mqid == -1) {
-        printf("ERROR init_message_queue CODE [%d]", shmem->mqid);
+        sprintf(command_error, "ERROR init_message_queue CODE [%d]", shmem->mqid);
+        plog(command_error);
         exit(9);
     }
 
@@ -168,13 +174,15 @@ int main(int argc, char **argv) {
     // init named PIPE between main and race manager
     
     if ((mkfifo(PIPE_COMMANDS, O_CREAT|O_EXCL|0600) < 0) && (errno != EEXIST)) {
-        printf("ERROR mkfifo CODE [%d]\n", errno);
+        sprintf(command_error, "ERROR mkfifo CODE [%d]\n", errno);
+        plog(command_error);
         exit(7);
     }
 
     
     if ((pCommandsWrite = open(PIPE_COMMANDS, O_WRONLY)) < 0) {
-        printf("ERROR opening pipe %s for writting CODE [%d]\n", PIPE_COMMANDS, errno);
+        sprintf(command_error, "ERROR opening pipe %s for writting CODE [%d]\n", PIPE_COMMANDS, errno);
+        plog(command_error);
         exit(8);
     }
 

@@ -67,7 +67,7 @@ int find_last (int ignoreCarIDs [], int length) {
 // 20:05:59 > #1  CarNo: 1; Team: A; Laps: 10; Box stops: 4;
 void stats() {
     char statsRace[MAX_COMMAND];
-    printf("\n\n");
+    printf("\n");
     plog("STATS:");
     
     int carsIDs [5] = {-1, -1, -1, -1, -1};

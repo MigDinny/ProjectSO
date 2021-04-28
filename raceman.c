@@ -27,6 +27,7 @@ int nPipes = 0;
 int totalCars = 0;
 int finishedCars = 0;
 int *processIDs;
+int winner = 0;
 
 fd_set read_set;
 int *pipes;
@@ -135,12 +136,6 @@ void check_input(char command[MAX_COMMAND]){
     char copy[MAX_COMMAND];
     char *address[MAX_COMMAND];
     char reply[MAX_COMMAND];
-    
-    if(shmem->status == ON) {
-        sprintf(reply, "COMMAND NOT ALLOWED, RACE ALREADY STARTED: %s", command);
-        plog(reply);
-        return;
-    }
 
     if (strlen(command) > 1) {
         command[strcspn(command, "\n")] = 0;
@@ -197,14 +192,6 @@ void check_input(char command[MAX_COMMAND]){
             }
             plog(reply);
 
-        } else if (strcmp(command, "pSHMEM") == 0) {                // print shmem, remove for final version
-            printf("!%d!\n", shmem->status);
-            for (int i = 0; i < shmem->nTeams; i++) {
-                for(int j = 0; j < teams[i].nCars; j++) {
-                    printf("Team %d - [%s]; Car %d_%d\n", i, teams[i].teamName, j, cars[i*config.nCars + j].pos);
-                }
-            }
-
         } else {
             sprintf(reply, "WRONG COMMAND => %s", command);
             plog(reply);
@@ -248,7 +235,7 @@ void end_race() {
         teams[i].status = FREE;
     }
 
-    plog("RACE ENDED!");
+    dlog("RACE ENDED!");
 
     shmem->finishing = 0;
 
@@ -271,11 +258,12 @@ void end_race() {
 
 void race_manager_worker() {
     
-    // @TODO we need to close file descriptor pCommandsRead
+    char command_error[MAX_COMMAND];
 
     // open PIPE_COMMANDS as read only
     if ((pCommandsRead = open(PIPE_COMMANDS, O_RDONLY)) < 0) {
-        printf("ERROR opening pipe %s for writting CODE [%d]\n", PIPE_COMMANDS, errno);
+        sprintf(command_error, "ERROR opening pipe %s for writting CODE [%d]\n", PIPE_COMMANDS, errno);
+        plog(command_error);
         exit(1);
     }
 
@@ -311,8 +299,16 @@ void race_manager_worker() {
                 if(FD_ISSET(pipes[i], &read_set)) {
                     read(pipes[i], &cmd, sizeof(cmd));
                     
-                    if(cmd.carStatus == FINISHED)
+                    if(cmd.carStatus == FINISHED) {
                         finishedCars++;
+                        if (winner == 0) {
+                            winner = 1;
+                            char log_winner[MAX_COMMAND];
+                            sprintf(log_winner, "CAR No %d WINS THE RACE", cars[cmd.carID].carNum);
+
+                            plog(log_winner);
+                        }
+                    }
                     
                     cmd.carStatus = RUNNING;    // to avoid multiple checks above
                 }

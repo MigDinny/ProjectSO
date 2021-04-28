@@ -20,7 +20,7 @@
 #include "include.h"
 
 void breakdown_manager_worker() {
-    plog("BREAKDOWN MANAGER STARTED");
+    dlog("BREAKDOWN MANAGER STARTED");
 
     int delay = config.tBreakDown;
     float multiplier = config.multiplier;

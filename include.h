@@ -16,7 +16,7 @@ int bmpid;
 int rmpid;
 
 // RACEMAN
-#define MAX_COMMAND 200
+#define MAX_COMMAND 512
 
 
 //CONFIG
@@ -32,7 +32,7 @@ enum CAR_STATUS {RUNNING, SAFETY, BOX, NO_FUEL, FINISHED};
 enum RACE_STATUS {ON, OFF};
 
 // LOG
-#define DEBUG
+//#define DEBUG
 #define MAX_SIZE 50
 
 
