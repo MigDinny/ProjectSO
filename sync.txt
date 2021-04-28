@@ -1,0 +1,20 @@
+shmem_t
+
+	- runningCars
+	{resto não precisa}
+
+team_t
+	{não precisa, ninguém mexe nas teams concurrencialmente}
+
+car_t
+	{igual}
+
+
+
+team-man & cars
+	
+	- pthread_mutex_lock to change team-scope vars
+	- cond vars ON box
+
+raceman
+	{não precisa}
