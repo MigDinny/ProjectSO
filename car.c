@@ -20,6 +20,10 @@
 
 void finish(int my_index) {
 	
+	char pCommand[MAX_COMMAND];
+	sprintf(pCommand, "[%d] ending", my_index);
+	dlog(pCommand);
+
 	// minus one car 
 	runningCarsT--;
 	shmem->runningCarsTotal--;
@@ -39,6 +43,7 @@ void finish(int my_index) {
 }
 
 void *car_worker(void *car_index) {
+	char pCommand[MAX_COMMAND];
     int my_index = *((int*) car_index);
 	int team_index = my_index / config.nCars;
 
@@ -47,8 +52,6 @@ void *car_worker(void *car_index) {
     float fuel2 = 2 * fuel1;
 	float fuel4 = 4 * fuel1;
 	int tryBox = 0; // 0 false 1 true
-
-	//printf("%f %f %f\n", fuel1, fuel2, fuel4);
 	
 	message_t receivedMSG;
 	int receivedBytes = 0;
@@ -61,8 +64,12 @@ void *car_worker(void *car_index) {
 		receivedBytes = msgrcv(shmem->mqid, &receivedMSG, sizeof(message_t), my_index+1, IPC_NOWAIT);
 
 		if (receivedBytes > 0) {
-			printf("[%d] RECEIVED failure \n", my_index);
+			sprintf(pCommand, "NEW PROBLEM IN CAR %d", cars[my_index].carNum);
+			plog(pCommand);
+
 			cars[my_index].status = SAFETY;
+			sprintf(pCommand, "[%d] changed status to SAFETY", my_index);
+			dlog(pCommand);
 			isCarFailure = 1;
 			receivedBytes = 0;
 			tryBox = 1;
@@ -88,7 +95,11 @@ void *car_worker(void *car_index) {
 			// if finished race
 			if (cars[my_index].laps >= config.nTurns) {
 				cars[my_index].status = FINISHED;
-				printf("[%d] finished\n", my_index);
+				sprintf(pCommand, "[%d] changed status to FINISHED", my_index);
+				dlog(pCommand);
+				sprintf(pCommand, "[%d] finished\n", my_index);
+				dlog(pCommand);
+
 				finish(my_index);
 			}
 			
@@ -106,7 +117,8 @@ void *car_worker(void *car_index) {
 
 					boxCarIndex = my_index;
 
-					printf("[%d] in box\n", my_index);
+					sprintf(pCommand, "[%d] in box", my_index);
+					dlog(pCommand);
 
 					if (isCarFailure == 1) {
 						isTeamCarFailure = 1;
@@ -115,14 +127,20 @@ void *car_worker(void *car_index) {
 
 					// inside box
 					cars[my_index].status = BOX;
+					sprintf(pCommand, "[%d] changed status to BOX", my_index);
+					dlog(pCommand);
+
 					cars[my_index].boxStops++;
 					pthread_cond_signal(&in_box);
 					pthread_cond_wait(&out_box, &tc_mutex);
-					printf("[%d] left box\n", my_index);
+					sprintf(pCommand, "[%d] left box", my_index);
+					dlog(pCommand);
 
 					// left box
 					tryBox = 0;
 					cars[my_index].status = RUNNING;
+					sprintf(pCommand, "[%d] changed status to RUNNING", my_index);
+					dlog(pCommand);
 				}
 
 				pthread_mutex_unlock(&tc_mutex);
@@ -136,23 +154,25 @@ void *car_worker(void *car_index) {
 		// check fuel
 		if (cars[my_index].fuel >= fuel4 && cars[my_index].fuel < fuel4+fuel1 && tryBox != 1) {
 			// fuel for only 4 laps -> TRY TO GET INTO BOX
-			printf("[%d] try box\n", my_index);
+			sprintf(pCommand, "[%d] try box", my_index);
+			dlog(pCommand);
 			tryBox = 1;
 			
 		} else if (cars[my_index].fuel >= fuel2 && cars[my_index].fuel < fuel2+fuel1 && cars[my_index].status != SAFETY) {
 			// fuel for only 2 laps -> SAFETY MODE
 			cars[my_index].status = SAFETY;
-			printf("[%d] safety mode\n", my_index);
+			sprintf(pCommand, "[%d] changed status to SAFETY", my_index);
+			dlog(pCommand);
 			tryBox = 1;
-			// @TODO some trigger here
+			
 		} else if (cars[my_index].fuel <= 0) {
 			// NO FUEL 
 			cars[my_index].status = NO_FUEL;
-			printf("[%d] no fuel\n", my_index);
+			sprintf(pCommand, "[%d] changed status to NO FUEL", my_index);
+			dlog(pCommand);
 			finish(my_index);
 		}
 
-		//printf("[%d] m = %d  |  lap = %d  | fuel = %f\n", my_index, cars[my_index].pos, cars[my_index].laps, cars[my_index].fuel);
 		usleep(1 * 1000 * 1000 * config.multiplier); // sleep 1 TIME UNIT
 	}
     
