@@ -1,3 +1,13 @@
+/*
+
+    Operating Systems - Final Project
+
+    @author Miguel Dinis | 2019219010 | miguelbarroso@student.dei.uc.pt | github.com/MigDinny
+    @author Rodrigo Ferreira | 2019220060 | rferreira@student.dei.uc.pt | github.com/IronMan988
+
+
+*/
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -99,7 +109,7 @@ void stats(int mode) {
         team_index = lastID / config.nCars;
 
         plog("...");
-        sprintf(statsRace, "%d position: Car: %d; Team: %s; Laps: %d; Box stops: %d", shmem->nCarsTotal, cars[lastID].carNum, teams[team_index].teamName, cars[lastID].laps, cars[lastID].boxStops);
+        sprintf(statsRace, "#%d  CarNo: %d; Team: %s; Laps: %d; Box stops: %d;", shmem->nCarsTotal, cars[lastID].carNum, teams[team_index].teamName, cars[lastID].laps, cars[lastID].boxStops);
         plog(statsRace);
     }
 

@@ -21,7 +21,7 @@
 void finish(int my_index) {
 	
 	char pCommand[MAX_COMMAND];
-	sprintf(pCommand, "[%d] ending", my_index);
+	sprintf(pCommand, "[%d] ending", cars[my_index].carNum);
 	dlog(pCommand);
 	
 	// minus one car
@@ -70,7 +70,7 @@ void *car_worker(void *car_index) {
 			plog(pCommand);
 
 			cars[my_index].status = SAFETY;
-			sprintf(pCommand, "[%d] changed status to SAFETY", my_index);
+			sprintf(pCommand, "[%d] changed status to SAFETY", cars[my_index].carNum);
 			plog(pCommand);
 			isCarFailure = 1;
 			receivedBytes = 0;
@@ -97,9 +97,9 @@ void *car_worker(void *car_index) {
 			// if finished race
 			if (cars[my_index].laps >= config.nTurns) {
 				cars[my_index].status = FINISHED;
-				sprintf(pCommand, "[%d] changed status to FINISHED", my_index);
+				sprintf(pCommand, "[%d] changed status to FINISHED", cars[my_index].carNum);
 				plog(pCommand);
-				sprintf(pCommand, "[%d] finished\n", my_index);
+				sprintf(pCommand, "[%d] finished\n", cars[my_index].carNum);
 				dlog(pCommand);
 
 				finish(my_index);
@@ -119,7 +119,7 @@ void *car_worker(void *car_index) {
 
 					boxCarIndex = my_index;
 
-					sprintf(pCommand, "[%d] in box", my_index);
+					sprintf(pCommand, "[%d] in box", cars[my_index].carNum);
 					dlog(pCommand);
 
 					if (isCarFailure == 1) {
@@ -129,18 +129,18 @@ void *car_worker(void *car_index) {
 
 					// inside box
 					cars[my_index].status = BOX;
-					sprintf(pCommand, "[%d] changed status to BOX", my_index);
+					sprintf(pCommand, "[%d] changed status to BOX", cars[my_index].carNum);
 					plog(pCommand);
 
 					pthread_cond_signal(&in_box);
 					pthread_cond_wait(&out_box, &tc_mutex);
-					sprintf(pCommand, "[%d] left box", my_index);
+					sprintf(pCommand, "[%d] left box", cars[my_index].carNum);
 					dlog(pCommand);
 
 					// left box
 					tryBox = 0;
 					cars[my_index].status = RUNNING;
-					sprintf(pCommand, "[%d] changed status to RUNNING", my_index);
+					sprintf(pCommand, "[%d] changed status to RUNNING", cars[my_index].carNum);
 					plog(pCommand);
 				}
 
@@ -155,21 +155,21 @@ void *car_worker(void *car_index) {
 		// check fuel
 		if (cars[my_index].fuel >= fuel4 && cars[my_index].fuel < fuel4+fuel1 && tryBox != 1) {
 			// fuel for only 4 laps -> TRY TO GET INTO BOX
-			sprintf(pCommand, "[%d] try box", my_index);
+			sprintf(pCommand, "[%d] try box", cars[my_index].carNum);
 			dlog(pCommand);
 			tryBox = 1;
 			
 		} else if (cars[my_index].fuel >= fuel2 && cars[my_index].fuel < fuel2+fuel1 && cars[my_index].status != SAFETY) {
 			// fuel for only 2 laps -> SAFETY MODE
 			cars[my_index].status = SAFETY;
-			sprintf(pCommand, "[%d] changed status to SAFETY", my_index);
+			sprintf(pCommand, "[%d] changed status to SAFETY", cars[my_index].carNum);
 			plog(pCommand);
 			tryBox = 1;
 			
 		} else if (cars[my_index].fuel <= 0) {
 			// NO FUEL 
 			cars[my_index].status = NO_FUEL;
-			sprintf(pCommand, "[%d] changed status to NO FUEL", my_index);
+			sprintf(pCommand, "[%d] changed status to NO FUEL", cars[my_index].carNum);
 			plog(pCommand);
 			finish(my_index);
 		}

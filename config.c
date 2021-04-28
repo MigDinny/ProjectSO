@@ -109,7 +109,7 @@ int load_config(char *filename) {
     config.tMinBox = values[6];
     config.tMaxBox = values[7];
     config.fuelTank = (float) values[8];
-	config.multiplier = 1/(config.time);
+	config.multiplier = (float) 1/(config.time);
 
     return 0;
 }
