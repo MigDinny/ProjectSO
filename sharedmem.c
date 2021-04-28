@@ -38,6 +38,7 @@ int init_shared_memory() {
 	shmem->nTeams = 0;
 	shmem->notSIGUSR1 = 1;
     shmem->finishing = 0;
+    shmem->runningCarsTotal = 0;
 	teams = (team_t*) (shmem+1);
 	cars = (car_t*) (teams + config.nTeams);
 	
