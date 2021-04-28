@@ -54,8 +54,9 @@ void terminate(int k) {
 }
 
 void sigint(int signum) {
+    plog("SIGINT detected");
+    
     stats();
-    printf(" SIGINT detected\n");
 
     if (shmem->status == OFF)
         terminate(1);
@@ -66,11 +67,8 @@ void sigint(int signum) {
 }
 
 void sigtstp(int signum) {
-    stats();
-
-    signal(SIGTSTP, sigtstp);
-    
     plog("SIGTSTP detected!");
+    stats();
 }
 
 // the program ended normally, received this signal by raceman
