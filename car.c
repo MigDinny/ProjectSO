@@ -23,17 +23,18 @@ void finish(int my_index) {
 	char pCommand[MAX_COMMAND];
 	sprintf(pCommand, "[%d] ending", my_index);
 	dlog(pCommand);
-
-	// minus one car 
+	
+	// minus one car
+	sem_wait(shmutex);
 	runningCarsT--;
 	shmem->runningCarsTotal--;
+	sem_post(shmutex);
 	
 	// [Unnamed Pipe] signal raceman: this car finished
 	command_t send;
 	send.carID = my_index;
 	send.carStatus = FINISHED;
 	write(channel[1], &send, sizeof(command_t));
-	//close(channel[1]);
 	
 	// if last car, unblock team-manager (it is stuck on while loop)
 	if (runningCarsT == 0)
