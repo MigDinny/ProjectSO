@@ -18,3 +18,9 @@ team-man & cars
 
 raceman
 	{não precisa}
+
+
+espera ativa:
+
+	nao existem, mas no breakdown tem um sleep com while. mas o sleep é grande o suficiente para n causar overhead
+	portanto nao é considerado espera ativa, e sim um timed block
