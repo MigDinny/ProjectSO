@@ -43,10 +43,11 @@ void close_log() {
     sem_unlink("LOG_MUTEX");
 }
 
-void plog(char line[MAX_SIZE]) {
+void plog(char line[300], ...) {
     
-
-    char timestr[200];
+    char timestr[20];
+    char forward[300];
+    forward[0] = '\0';
     time_t timer;
 
     sem_wait(logMutex);     // wait to write on file
@@ -54,17 +55,38 @@ void plog(char line[MAX_SIZE]) {
     timer = time(NULL);
     strcpy(timestr, ctime(&timer));
     
-    printf("%.*s > %s\n", 8, timestr + 11, line);
+    sprintf(forward, "%.*s > ", 8, timestr + 11);
+    strcat(forward, line);
+    strcat(forward, "\n");
+    
+    va_list args;
+    va_list args2;
+    va_start(args, line);
+    va_start(args2, line);
 
-    fprintf(logfile, "%.*s: %s\n", 8, timestr + 11, line);
+    vprintf(forward, args);
+
+    vfprintf(logfile, forward, args2);
+
     fflush(logfile);
 
     sem_post(logMutex);     // free mutex for next writer
 }
 
-void dlog(char line[MAX_SIZE]) {
+void dlog(char line[300], ...) {
     #ifdef DEBUG
-        printf("DEBUG: %s\n", line);
+        char forward[300];
+        forward[0] = '\0';
+
+        sprintf(forward, "[DEBUG] >> ");
+        strcat(forward, line);
+        strcat(forward, "\n");
+
+        va_list args;
+        va_start(args, line);
+
+        vprintf(forward, args);
+    
     #endif
 }
 

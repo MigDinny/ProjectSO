@@ -55,7 +55,7 @@ void terminate(int k) {
 
 void sigint(int signum) {
     stats();
-    printf(" SIGINT detected\n");
+    plog("SIGINT detected");
 
     if (shmem->status == OFF)
         terminate(1);
@@ -66,11 +66,8 @@ void sigint(int signum) {
 }
 
 void sigtstp(int signum) {
-    stats();
-
-    signal(SIGTSTP, sigtstp);
-    
     plog("SIGTSTP detected!");
+    stats();    
 }
 
 // the program ended normally, received this signal by raceman
@@ -190,7 +187,7 @@ int main(int argc, char **argv) {
         strcpy(cmd.command, cmdSend);
 
         if (shmem->status == ON || shmem->finishing == 1) {
-            plog("COMMAND NOT ALLOWED, RACE ALREADY STARTED");
+            plog("COMMAND NOT ALLOWED, RACE ALREADY STARTED: ");
             cmd.command[0] = '\0';
             continue;
         }

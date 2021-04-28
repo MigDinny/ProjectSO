@@ -8,6 +8,7 @@
 
 */
 #include <semaphore.h>
+#include <stdarg.h>
 
 
 // MAIN
@@ -113,9 +114,9 @@ int init_log();
 
 void close_log();
 
-void plog(char [MAX_SIZE]);
+void plog(char[300], ...);
 
-void dlog(char [MAX_SIZE]);
+void dlog(char[300], ...);
 
 
 // CONFIG
