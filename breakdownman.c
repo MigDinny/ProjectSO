@@ -31,6 +31,7 @@ void breakdown_manager_worker() {
     int j = 0;
     int randnum = 0;
     int tempid;
+    char pCommand[MAX_COMMAND];
     message_t failure;
 
     while (1) {
@@ -46,6 +47,8 @@ void breakdown_manager_worker() {
                         // GENERATE FAILURE!
                         failure.mtype = tempid + 1;
                         msgsnd(shmem->mqid, &failure, sizeof(message_t), 0);
+                        sprintf(pCommand, "PROBLEM SENT TO CAR [%d]", cars[tempid].carNum);
+                        plog(pCommand);
                     }
                 }
             }

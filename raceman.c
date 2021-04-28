@@ -202,6 +202,8 @@ void check_input(char command[MAX_COMMAND]){
 
 void end_race() {
 
+    stats(0);
+
     shmem->status = OFF;
 
     // cleanup
@@ -224,6 +226,10 @@ void end_race() {
     finishedCars = 0;
     pipes = pipes_temp; 
 
+    //reset shmem
+    shmem->countBreakDowns = 0;
+    shmem->countRefuels = 0;
+
     // reset cars positions
     for (int i = 0; i < shmem->nTeams; i++) {
         for(int j = 0; j < teams[i].nCars; j++) {
@@ -241,12 +247,11 @@ void end_race() {
 
     // dont proceed if sigusr1 was caught and print stats
     if (!shmem->notSIGUSR1) {
-        stats();
         shmem->notSIGUSR1 = 1;
         return;
     }
 
-    stats();
+    
 
     // close named pipe and terminate the program
     unlink(PIPE_COMMANDS);
@@ -301,7 +306,7 @@ void race_manager_worker() {
                     
                     if(cmd.carStatus == FINISHED) {
                         finishedCars++;
-                        if (winner == 0) {
+                        if (winner == 0 && cars[cmd.carID].laps >= config.nTurns) {
                             winner = 1;
                             char log_winner[MAX_COMMAND];
                             sprintf(log_winner, "CAR No %d WINS THE RACE", cars[cmd.carID].carNum);

@@ -69,8 +69,6 @@ typedef struct car_t {
 typedef struct team_t {
     char teamName[MAX_TEAM_NAME];
     int nCars;
-    int countBreakDowns;
-    int countRefuels;
     enum BOX_STATUS status;
 } team_t;
 
@@ -78,6 +76,8 @@ typedef struct shmem_t {
     enum RACE_STATUS status;
     int nCarsTotal;
     int runningCarsTotal;
+    int countBreakDowns;
+    int countRefuels;
     int mqid;
     int nTeams;
     int notSIGUSR1;
@@ -134,7 +134,7 @@ int find_first (int [], int);
 
 int find_last (int [], int);
 
-void stats();
+void stats(int);
 
 
 // RACE MANAGER
