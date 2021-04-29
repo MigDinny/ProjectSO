@@ -32,7 +32,7 @@ enum CAR_STATUS {RUNNING, SAFETY, BOX, NO_FUEL, FINISHED};
 enum RACE_STATUS {ON, OFF};
 
 // LOG
-//#define DEBUG
+#define DEBUG
 #define MAX_SIZE 50
 
 
@@ -76,12 +76,15 @@ typedef struct shmem_t {
     enum RACE_STATUS status;
     int nCarsTotal;
     int runningCarsTotal;
+    int quitCars;
     int countBreakDowns;
     int countRefuels;
     int mqid;
     int nTeams;
     int notSIGUSR1;
     int finishing;
+    int carsWIDs[5];
+    int lastCarID;
 } shmem_t;
 
 typedef struct command_t {
@@ -133,6 +136,10 @@ char intInArray(int [], int, int);
 int find_first (int [], int);
 
 int find_last (int [], int);
+
+void addCarWIDs(int);
+
+void lastCar(int);
 
 void stats(int);
 

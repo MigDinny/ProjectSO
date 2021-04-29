@@ -23,7 +23,8 @@ void finish(int my_index) {
 	char pCommand[MAX_COMMAND];
 	sprintf(pCommand, "[%d] ending", cars[my_index].carNum);
 	dlog(pCommand);
-	
+
+	// add carID to array of winners
 	// minus one car
 	sem_wait(shmutex);
 	runningCarsT--;
@@ -102,6 +103,10 @@ void *car_worker(void *car_index) {
 				sprintf(pCommand, "[%d] finished\n", cars[my_index].carNum);
 				dlog(pCommand);
 
+				sem_wait(shmutex);
+				addCarWIDs(my_index);
+				sem_post(shmutex);
+				
 				finish(my_index);
 			}
 			
@@ -148,8 +153,9 @@ void *car_worker(void *car_index) {
 			}
 		
 			// if race was interrupted -> finish this car because he crossed lap
-			if (shmem->status == OFF)
+			if (shmem->status == OFF) {
 				finish(my_index);
+			}
 		}
 
 		// check fuel
@@ -171,6 +177,11 @@ void *car_worker(void *car_index) {
 			cars[my_index].status = NO_FUEL;
 			sprintf(pCommand, "[%d] changed status to NO FUEL", cars[my_index].carNum);
 			plog(pCommand);
+
+			sem_wait(shmutex);
+			shmem->quitCars++;
+			sem_post(shmutex);
+			
 			finish(my_index);
 		}
 
