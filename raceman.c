@@ -192,6 +192,19 @@ void check_input(char command[MAX_COMMAND]){
             }
             plog(reply);
 
+        }  else if (strcmp(command, "pSHMEM") == 0) {                // print shmem, remove for final version
+            printf("!%d!\n", shmem->status);
+
+            for (int i = 0; i < shmem->nTeams; i++) {
+                for(int j = 0; j < teams[i].nCars; j++) {
+                    printf("Team %d - [%s]; Car %d_%d\n", i, teams[i].teamName, j, cars[i*config.nCars + j].pos);
+                }
+            }
+
+            for (int i = 0; i < 5; i++) {
+                printf("%d_%d\n", shmem->carsWIDs[i], shmem->lastCarID);
+            }
+
         } else {
             sprintf(reply, "WRONG COMMAND => %s", command);
             plog(reply);
