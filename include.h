@@ -32,7 +32,7 @@ enum CAR_STATUS {RUNNING, SAFETY, BOX, NO_FUEL, FINISHED};
 enum RACE_STATUS {ON, OFF};
 
 // LOG
-#define DEBUG
+// #define DEBUG
 #define MAX_SIZE 50
 
 
