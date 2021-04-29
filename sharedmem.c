@@ -39,7 +39,8 @@ int init_shared_memory() {
 	shmem->notSIGUSR1 = 1;
     shmem->finishing = 0;
     shmem->runningCarsTotal = 0;
-
+    shmem->quitCars = 0;
+    shmem->lastCarID = -1;
     for (int i = 0; i < 5; i++) {
         shmem->carsWIDs[i] = -1;
     }

@@ -76,6 +76,7 @@ typedef struct shmem_t {
     enum RACE_STATUS status;
     int nCarsTotal;
     int runningCarsTotal;
+    int quitCars;
     int countBreakDowns;
     int countRefuels;
     int mqid;
@@ -136,9 +137,9 @@ int find_first (int [], int);
 
 int find_last (int [], int);
 
-void addCarWIDs(int, int);
+void addCarWIDs(int);
 
-void verifyLastCar(int);
+void lastCar(int);
 
 void stats(int);
 

@@ -104,7 +104,7 @@ void *car_worker(void *car_index) {
 				dlog(pCommand);
 
 				sem_wait(shmutex);
-				addCarWIDs(my_index, 0);
+				addCarWIDs(my_index);
 				sem_post(shmutex);
 				
 				finish(my_index);
@@ -154,9 +154,6 @@ void *car_worker(void *car_index) {
 		
 			// if race was interrupted -> finish this car because he crossed lap
 			if (shmem->status == OFF) {
-				sem_wait(shmutex);
-				addCarWIDs(my_index, 2);
-				sem_post(shmutex);
 				finish(my_index);
 			}
 		}
@@ -182,7 +179,7 @@ void *car_worker(void *car_index) {
 			plog(pCommand);
 
 			sem_wait(shmutex);
-			addCarWIDs(my_index, 1);
+			shmem->quitCars++;
 			sem_post(shmutex);
 			
 			finish(my_index);
