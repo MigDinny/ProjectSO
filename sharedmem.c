@@ -47,7 +47,7 @@ int init_shared_memory() {
     
 	teams = (team_t*) (shmem+1);
 	cars = (car_t*) (teams + config.nTeams);
-	
+
 	return 0;
 }
 

@@ -33,6 +33,7 @@ fd_set read_set;
 int *pipes;
 int fdmax = 0;
 
+
 void add_teams(char team[MAX_TEAM_NAME]) {      // create new team
     strcpy(teams[shmem->nTeams].teamName, team);
     teams[shmem->nTeams].nCars = 0;
@@ -165,7 +166,7 @@ void check_input(char command[MAX_COMMAND]){
             float consumption = atof(address[8]);
             int reliability = atoi(address[10]);
             
-            if (carNum > 0 && speed > 0 && consumption > 0 && reliability > 0 && reliability < 100) {
+            if (carNum > 0 && speed > 0 && consumption > 0 && reliability >= 0 && reliability <= 100) {
 
                 int error = add_car(address[2], carNum, speed, consumption, reliability);
                 if (error == 0) {
@@ -178,7 +179,7 @@ void check_input(char command[MAX_COMMAND]){
                 plog(reply);
             }
 
-        } else if (countWords == 2 && strcmp(address[0], "START") == 0 && strcmp(address[1], "RACE") == 0) {
+        } else if (countWords == 2 && strcmp(address[0], "START") == 0 && strcmp(address[1], "RACE!") == 0) {
             if (shmem->nTeams >= 3) {
                 sprintf(reply, "NEW COMMAND RECEIVED: %s", command);
 
@@ -214,7 +215,6 @@ void check_input(char command[MAX_COMMAND]){
 }
 
 void end_race() {
-
     stats(0);
 
     shmem->status = OFF;
@@ -313,7 +313,8 @@ void race_manager_worker() {
             }
 
             // this only runs after start race because of nPipes | unnamed pipes triggered
-            for (int i = 1; i < nPipes; i++) { 
+            for (int i = 1; i < nPipes; i++) {
+
                 if(FD_ISSET(pipes[i], &read_set)) {
                     read(pipes[i], &cmd, sizeof(cmd));
                     
@@ -335,7 +336,6 @@ void race_manager_worker() {
             // if all cars finished, end race
             if (finishedCars == totalCars && totalCars != 0)
                 end_race();
-
         }
     }
 
